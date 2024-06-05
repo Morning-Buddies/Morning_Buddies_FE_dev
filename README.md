@@ -2,16 +2,19 @@
 
 A new Flutter project.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Morning-Buddies_FE
+## lib 디렉토리 구조
+```
+📦lib
+ ┣ 📂models
+    - 앱에서 사용되는 데이터 모델
+    - 앱 전체서 사용되는 데이터들을 저장하는데 사용
+ ┣ 📂screens
+    - 화면 UI에 대한 폴더, 해당 화면 표현하는 코드
+ ┣ 📂service
+    - 외부와 인터페이스를 하기 위한 코드(WebAPI, DB...)
+ ┣ 📂utils
+    - 앱 전체적으로 사용되는 기능을 위한것, 반복되는 기능 
+ ┣ 📂widgets
+    - 전체적으로 사용되는 위젯(AppBar, ColorTheme... etc)등 여러 화면에서 이용되는 위젯을 모아두는 공간
+ ┗ 📜main.dart
+```
