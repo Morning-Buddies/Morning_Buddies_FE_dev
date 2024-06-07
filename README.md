@@ -15,6 +15,6 @@ A new Flutter project.
  ┣ 📂utils
     - 앱 전체적으로 사용되는 기능을 위한것, 반복되는 기능 
  ┣ 📂widgets
-    - 전체적으로 사용되는 위젯(AppBar, ColorTheme... etc)등 여러 화면에서 이용되는 위젯을 모아두는 공간
+    - 전체적으로 사용되는 위젯(AppBar, BottomNav(Footer)... etc)등 여러 화면에서 이용되는 위젯을 모아두는 공간
  ┗ 📜main.dart
 ```
