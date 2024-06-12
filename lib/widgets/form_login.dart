@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 
@@ -42,7 +43,7 @@ class _FormTemplateState extends State<LoginForm> {
             ),
             const SizedBox(height: 8),
             CustomOutlinedButton(
-              backgroundcolor: Colors.grey,
+              backgroundcolor: ColorStyles.btnGrey,
               width: 300,
               text: '로그인 하기',
               textStyle: const TextStyle(color: Colors.white),

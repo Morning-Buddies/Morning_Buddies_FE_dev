@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/utils/design_palette.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
@@ -19,11 +20,12 @@ class CustomTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.zero),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
           borderSide: BorderSide(
-            color: Color(0xFFABABB5),
-          ),
+              // style: BorderStyle.solid,
+              color: ColorStyles.btnGrey,
+              width: 0.5),
         ),
         hintText: hintText,
       ),
