@@ -31,7 +31,7 @@ class CustomOutlinedButton extends StatelessWidget {
         ),
         onPressed: onPressed,
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
@@ -48,16 +48,3 @@ class CustomOutlinedButton extends StatelessWidget {
     );
   }
 }
-
-// 사용 예시
-// CustomOutlinedButton(
-//   width: 300,
-//   text: '로그인 하기',
-//   textStyle: const TextStyle(color: Colors.white),
-//   onPressed: () {
-//     if (_formKey.currentState!.validate()) {
-//       // 로그인 로직 들어갈 자리
-//     }
-//   },
-//   icon: const Icon(Icons.login, color: Colors.white), // 아이콘 사용 예시
-// );

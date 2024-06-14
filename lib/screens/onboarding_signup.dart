@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/signup_getuserinfo.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 
@@ -31,7 +32,11 @@ class SignUp extends StatelessWidget {
                     text: '이메일로 회원가입',
                     textStyle: const TextStyle(color: Colors.white),
                     onPressed: () {
-                      // 이메일 회원가입 창으로 이동
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GetUserInfoScrceen()),
+                      );
                     },
                   ),
                   // 로그인 화면으로 돌아가는 텍스트 버튼
@@ -52,6 +57,26 @@ class SignUp extends StatelessWidget {
                         ),
                       ),
                     ),
+                  ),
+                  CustomOutlinedButton(
+                    backgroundcolor: const Color(0xFFFEE500),
+                    icon: Image.asset("assets/images/kakao_logo.png"),
+                    width: 300,
+                    text: '카카오 로그인',
+                    textStyle: const TextStyle(color: Colors.black),
+                    onPressed: () {
+                      // 카카오 로그인 로직
+                    },
+                  ),
+                  CustomOutlinedButton(
+                    backgroundcolor: const Color(0xFFFEFEFE),
+                    icon: Image.asset("assets/images/google_logo.png"),
+                    width: 300,
+                    text: 'Google 로그인',
+                    textStyle: const TextStyle(color: Colors.black),
+                    onPressed: () {
+                      // 구글 로그인 로직
+                    },
                   ),
                 ],
               ),
