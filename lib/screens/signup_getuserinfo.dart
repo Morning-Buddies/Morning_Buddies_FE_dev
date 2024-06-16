@@ -17,11 +17,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
   void _updateVisibleFields(int newCount) {
     setState(() {
       _visibleFieldCount = newCount;
-      _progressPercent = _visibleFieldCount / 10;
-      if (_progressPercent == 0.9) {
-        _progressPercent = 1.0;
-        return;
-      }
+      _progressPercent = _visibleFieldCount / 9;
     });
   }
 
@@ -37,14 +33,17 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
             },
             icon: const Icon(Icons.arrow_back)),
         title: LinearPercentIndicator(
-          center: Text(
-            "$_progressPercent",
-            style: const TextStyle(fontSize: 16),
-          ),
+          // 💡 이 부분에 주석을 해제하면 Statusbar 의 수치를 확인하실 수 있습니다.
+          // center: Text(
+          //   "$_progressPercent",
+          //   style: const TextStyle(fontSize: 16),
+          // ),
           barRadius: const Radius.circular(8.0),
           width: 330,
           lineHeight: 16.0,
-          percent: _progressPercent, // 함수 만들어서 질문 진행시마다 업뎃
+          percent: _progressPercent <= 0.9
+              ? _progressPercent
+              : 1.0, // 1.0 이상 올라가지 않게 설정
           progressColor: _progressPercent >= 0.9
               ? ColorStyles.secondaryOrange
               : ColorStyles.orange,
@@ -58,8 +57,6 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
                 SignUpForm(
                   onProgressChanged: _updateVisibleFields,
                 ),
-                // controller 에 입력 들어가면 다음 문장 등장?
-                // Complete Btn => custom button 재활용
               ],
             ),
           ),

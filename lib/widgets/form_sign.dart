@@ -169,19 +169,11 @@ class _SignupFormState extends State<SignUpForm> {
                                 }
                                 break;
                               case 'last name':
-                                /*
-                                🚨 Last Name field에 입력이 들어갈때마다 
-                                _visibleFields 의 length 가 갱신되서 statusbar에서 에러가 발생합니다.
-                                빠른시일내에 수정하겠슴다 ㅠ
-                              */
-                                if (_formKey.currentState!.validate()) {
-                                  Throttle _throttle = Throttle(
-                                      delay: const Duration(seconds: 5));
-                                  _throttle.run(() => setState(
-                                      () => _visibleFields.add('Dropdown')));
-
-                                  // setState(
-                                  //     () => _visibleFields.add('Dropdown'));
+                                if (!_visibleFields.contains('Dropdown')) {
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(
+                                        () => _visibleFields.add('Dropdown'));
+                                  }
                                 }
                                 break;
                               case 'phone #':
@@ -194,6 +186,7 @@ class _SignupFormState extends State<SignUpForm> {
                                 }
                                 break;
                             }
+                            // _visibleFields 길이를 callback 으로 상위 위젯으로 올림
                             widget.onProgressChanged(_visibleFields.length);
                           }
                         },
@@ -247,8 +240,8 @@ class _SignupFormState extends State<SignUpForm> {
             children: [
               _buildFormField(
                   'E-mail(ID)', 'Write your email down here', false),
-              _buildFormField('Password', 'Set your password', false),
-              _buildFormField('Confirm Password', 'Check your password', false),
+              _buildFormField('Password', 'Set your password', true),
+              _buildFormField('Confirm Password', 'Check your password', true),
               _buildFormField('First Name', 'John', false),
               // 🚨
               _buildFormField('Last Name', 'Doe', false),
