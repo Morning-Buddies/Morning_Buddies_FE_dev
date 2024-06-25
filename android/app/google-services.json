@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "11672111632",
+    "project_id": "morning-buddies-e8db1",
+    "storage_bucket": "morning-buddies-e8db1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11672111632:android:ea06d4098cb7a0d96d9895",
+        "android_client_info": {
+          "package_name": "com.example.morning_buddies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuKADh1CtsksFrCI3gd3LmqPQ32FykzOk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

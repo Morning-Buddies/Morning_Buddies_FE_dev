@@ -1,12 +1,11 @@
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/utils/debouce.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:morning_buddies/screens/main_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/utils/throttle.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -23,6 +22,7 @@ class SignUpForm extends StatefulWidget {
 class _SignupFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
 
+  // TextController
   final Map<String, TextEditingController> _controllers = {
     'email': TextEditingController(),
     'password': TextEditingController(),
@@ -30,6 +30,8 @@ class _SignupFormState extends State<SignUpForm> {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
   };
+
+  // Validator 관련 변수 및 메서드
   bool _isPasswordCompliant(String password,
       [int minLength = 8, int maxLength = 20]) {
     if (password.isEmpty) {
@@ -82,7 +84,62 @@ class _SignupFormState extends State<SignUpForm> {
     super.dispose();
   }
 
+  // Statusbar 계산의 기준이 되는 리스트
+  // textcontroller가 생기면 해당하는 인풋 필드가 리스트에 삽입되는 원리
   final List<String> _visibleFields = ['E-mail(ID)'];
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _verificationId = '';
+  bool _codeSent = false;
+  final TextEditingController _smsController = TextEditingController();
+
+  Future<void> _verifyPhoneNumber(String phoneNumber) async {
+    String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    String formattedPhoneNumber = '+82$numericPhoneNumber';
+
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: formattedPhoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            _verificationId = verificationId;
+            _codeSent = true;
+            _visibleFields.add('Verify #');
+            print(formattedPhoneNumber);
+            print(_verificationId);
+          });
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
+      print(_verificationId);
+      Fluttertoast.showToast(msg: 'Error verifying phone number: $e');
+    }
+  }
+
+  Future<void> _signInWithPhoneNumber(String smsCode) async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: smsCode,
+      );
+      if (mounted) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MainProfile()));
+      }
+
+      await _auth.signInWithCredential(credential);
+      // Sign-in successful, proceed with further signup steps (e.g., email/password)
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Invalid verification code');
+    }
+  }
 
   Widget _buildFormField(String label, String hintText, bool obscuretext) {
     TextEditingController? controller = _controllers[label.toLowerCase()];
@@ -218,7 +275,7 @@ class _SignupFormState extends State<SignUpForm> {
                   CustomTextFormField(
                     emptyErrorText: "",
                     key: const ValueKey('VerificationCode'),
-                    controller: TextEditingController(),
+                    controller: _smsController,
                     hintText: 'Enter verification code',
                     onChanged: (value) {},
                   ),
@@ -231,6 +288,10 @@ class _SignupFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    if (_visibleFields.contains('Phone #') &&
+        !_visibleFields.contains('AuthenticationButton')) {
+      _visibleFields.add('AuthenticationButton');
+    }
     return Form(
       key: _formKey,
       child: SizedBox(
@@ -243,7 +304,6 @@ class _SignupFormState extends State<SignUpForm> {
               _buildFormField('Password', 'Set your password', true),
               _buildFormField('Confirm Password', 'Check your password', true),
               _buildFormField('First Name', 'John', false),
-              // 🚨
               _buildFormField('Last Name', 'Doe', false),
               if (_visibleFields.contains('Dropdown'))
                 HoursDropdown(
@@ -261,9 +321,13 @@ class _SignupFormState extends State<SignUpForm> {
                 width: 374,
                 text: '회원가입 완료하기',
                 textStyle: const TextStyle(color: Colors.white),
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // POST 로직 들어갈 자리
+                    if (!_codeSent) {
+                      _verifyPhoneNumber(_controllers['phone #']!.text);
+                    } else {
+                      _signInWithPhoneNumber(_smsController.text);
+                    }
                   }
                 },
               )
