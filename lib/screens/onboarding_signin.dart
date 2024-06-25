@@ -29,6 +29,7 @@ class SignIn extends StatelessWidget {
                   const LoginForm(),
                   Align(
                     alignment: Alignment.topRight,
+                    // 회원가입으로 이동하는 textbtn
                     child: TextButton(
                       onPressed: () {
                         // 회원가입으로 이동
@@ -52,8 +53,6 @@ class SignIn extends StatelessWidget {
                 ],
               ),
             ),
-            // 회원가입으로 이동하는 textbtn
-
             // 소셜 로그인 버튼
             CustomOutlinedButton(
               backgroundcolor: const Color(0xFFFEE500),
