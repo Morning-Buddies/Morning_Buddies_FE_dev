@@ -12,7 +12,20 @@
           "package_name": "com.example.morning_buddies"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "11672111632-vkudfcbgplghq8rhe2fv9q6197phvjh9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.morning_buddies",
+            "certificate_hash": "f8dd34517e4dc7775a4f150dfd7db786a576fefb"
+          }
+        },
+        {
+          "client_id": "11672111632-uqht5smglhq3a0tt6umsl3jp3kh42vd7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBuKADh1CtsksFrCI3gd3LmqPQ32FykzOk"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11672111632-repntro39nicgs3s548o86vp0tkfqq05.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "11672111632-fduqm3mgshq6vmkneum54enb3gbga2e7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.morningBuddies"
+              }
+            }
+          ]
         }
       }
     }

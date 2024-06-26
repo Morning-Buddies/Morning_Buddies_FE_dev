@@ -93,7 +93,9 @@ class _SignupFormState extends State<SignUpForm> {
   bool _codeSent = false;
   final TextEditingController _smsController = TextEditingController();
 
+  // SMS 인증번호 발송 및 확인
   Future<void> _verifyPhoneNumber(String phoneNumber) async {
+    // 01012345678 -> +821012345678로 변경
     String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     String formattedPhoneNumber = '+82$numericPhoneNumber';
 
@@ -111,33 +113,53 @@ class _SignupFormState extends State<SignUpForm> {
             _verificationId = verificationId;
             _codeSent = true;
             _visibleFields.add('Verify #');
-            print(formattedPhoneNumber);
-            print(_verificationId);
           });
         },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+        // 코드 발송후 3분후 Code Time out
+        timeout: const Duration(seconds: 180),
+        codeAutoRetrievalTimeout: (String verificationId) {
+          Fluttertoast.showToast(msg: 'Time out, please try again');
+        },
       );
     } catch (e) {
-      print(_verificationId);
+      print(e.toString());
       Fluttertoast.showToast(msg: 'Error verifying phone number: $e');
     }
   }
 
-  Future<void> _signInWithPhoneNumber(String smsCode) async {
+  // 인증번화 확인시 회원가입 로직
+  Future<void> _signUpFirebase(String smsCode) async {
     try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: smsCode,
       );
+
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _controllers['e-mail(id)']!.text,
+        password: _controllers['password']!.text,
+      );
+
+      await userCredential.user!.updatePhoneNumber(phoneCredential);
       if (mounted) {
-        Navigator.push(context,
+        await Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const MainProfile()));
       }
-
-      await _auth.signInWithCredential(credential);
-      // Sign-in successful, proceed with further signup steps (e.g., email/password)
+    } on FirebaseAuthException catch (e) {
+      // Firebase Authentication 예외 처리
+      if (e.code == 'invalid-verification-code') {
+        Fluttertoast.showToast(msg: '유효하지 않은 인증 코드입니다.');
+      } else if (e.code == 'email-already-in-use') {
+        Fluttertoast.showToast(msg: '이미 사용 중인 이메일입니다.');
+      } else if (e.code == 'weak-password') {
+        Fluttertoast.showToast(msg: '비밀번호가 너무 약합니다.');
+      } else {
+        Fluttertoast.showToast(msg: '회원가입 오류: ${e.message}');
+      }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Invalid verification code');
+      // 기타 예외 처리
+      Fluttertoast.showToast(msg: '예상치 못한 오류: ${e.toString()}');
     }
   }
 
@@ -251,24 +273,29 @@ class _SignupFormState extends State<SignUpForm> {
                     ),
                     if (label == 'Phone #' &&
                         _visibleFields.contains('AuthenticationButton'))
-                      OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)))),
-                          onPressed: () {
-                            /* 
-                              인증하기 버튼 터치시 키보드로 인해
-                              인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
-                            */
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            setState(() => _visibleFields.add('Verify #'));
-                          },
-                          child: const Text(
-                            '인증하기',
-                            style: TextStyle(color: Colors.white),
-                          ))
+                      Container(
+                        // width: 76,
+                        padding: const EdgeInsets.all(8.0),
+                        child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(5.0)))),
+                            onPressed: () {
+                              /* 
+                                인증하기 버튼 터치시 키보드로 인해
+                                인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
+                              */
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              _verifyPhoneNumber(_controllers['phone #']!.text);
+                              setState(() => _visibleFields.add('Verify #'));
+                            },
+                            child: const Text(
+                              '인증하기',
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      )
                   ],
                 ),
                 if (showVerificationField)
@@ -322,11 +349,13 @@ class _SignupFormState extends State<SignUpForm> {
                 text: '회원가입 완료하기',
                 textStyle: const TextStyle(color: Colors.white),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (!_codeSent) {
-                      _verifyPhoneNumber(_controllers['phone #']!.text);
+                  if (_formKey.currentState!.validate() &&
+                      _verificationId.isNotEmpty) {
+                    if (_codeSent) {
+                      _signUpFirebase(_smsController.text);
                     } else {
-                      _signInWithPhoneNumber(_smsController.text);
+                      Fluttertoast.showToast(
+                          msg: 'Please verify your phone number first.');
                     }
                   }
                 },

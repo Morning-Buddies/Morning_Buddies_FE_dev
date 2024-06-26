@@ -11,8 +11,10 @@ class _MainProfileState extends State<MainProfile> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Column(
-        children: [Text("Main Profile")],
+      body: Center(
+        child: Column(
+          children: [Text("Main Profile")],
+        ),
       ),
     );
   }
