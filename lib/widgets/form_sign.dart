@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:morning_buddies/screens/main_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
+import 'package:morning_buddies/utils/validator.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
@@ -30,51 +31,6 @@ class _SignupFormState extends State<SignUpForm> {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
   };
-
-  // Validator 관련 변수 및 메서드
-  bool _isPasswordCompliant(String password,
-      [int minLength = 8, int maxLength = 20]) {
-    if (password.isEmpty) {
-      return false;
-    }
-    bool hasProperLength =
-        password.length >= minLength && password.length <= maxLength;
-    bool hasNumber = password.contains(RegExp(r'\d'));
-    bool hasLetter = password.contains(RegExp(r'[a-zA-Z]'));
-    bool hasSpecialCase = password.contains(RegExp(r'[!@#\$%^&]'));
-
-    return hasProperLength && hasNumber && hasLetter && hasSpecialCase;
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return '빈칸을 채워주세요';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return '이메일 형식을 지켜주세요';
-    } else if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-      return '이메일 형식을 지켜주세요';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (!_isPasswordCompliant(value!)) {
-      return '문자+숫자+특수문자 조합 8자 이상 20자 미만으로 구성해주세요';
-    }
-    return null;
-  }
-
-  String? _comfirmPassword(String? value) {
-    if (value != _controllers['password']!.text) {
-      return '동일한 비밀번호를 입력해주세요';
-    }
-    return null;
-  }
 
   @override
   void dispose() {
@@ -127,7 +83,7 @@ class _SignupFormState extends State<SignUpForm> {
     }
   }
 
-  // 인증번화 확인시 회원가입 로직
+  // 인증번호 확인시 회원가입 로직
   Future<void> _signUpFirebase(String smsCode) async {
     try {
       PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
@@ -175,19 +131,18 @@ class _SignupFormState extends State<SignUpForm> {
     String? Function(String?)? validator;
     switch (label.toLowerCase()) {
       case 'e-mail(id)':
-        validator = _validateEmail;
+        validator = Validator.validateEmail;
         break;
       case 'password':
-        validator = _validatePassword;
+        validator = Validator.validatePassword;
         break;
       case 'confirm password':
-        validator = _comfirmPassword;
+        validator = (value) =>
+            Validator.confirmPassword(value, _controllers['password']!.text);
         break;
       case 'first name':
-        validator = _validateName;
-        break;
       case 'last name':
-        validator = _validateName;
+        validator = Validator.validateName;
         break;
     }
 
