@@ -51,6 +51,8 @@ class _SignupFormState extends State<SignUpForm> {
 
   // SMS 인증번호 발송 및 확인
   Future<void> _verifyPhoneNumber(String phoneNumber) async {
+    String phoneNumber = _controllers['phone #']!.text;
+
     // 01012345678 -> +821012345678로 변경
     String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     String formattedPhoneNumber = '+82$numericPhoneNumber';
@@ -59,7 +61,7 @@ class _SignupFormState extends State<SignUpForm> {
       await _auth.verifyPhoneNumber(
         phoneNumber: formattedPhoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
+          // await _auth.signInWithCredential(credential);
         },
         verificationFailed: (FirebaseAuthException e) {
           Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
@@ -71,8 +73,8 @@ class _SignupFormState extends State<SignUpForm> {
             _visibleFields.add('Verify #');
           });
         },
-        // 코드 발송후 3분후 Code Time out
-        timeout: const Duration(seconds: 180),
+        // 코드 발송후 2분후 Code Time out
+        timeout: const Duration(seconds: 120),
         codeAutoRetrievalTimeout: (String verificationId) {
           Fluttertoast.showToast(msg: 'Time out, please try again');
         },
@@ -84,38 +86,24 @@ class _SignupFormState extends State<SignUpForm> {
   }
 
   // 인증번호 확인시 회원가입 로직
-  Future<void> _signUpFirebase(String smsCode) async {
+  Future<void> _signInWithPhoneNumber() async {
     try {
-      PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
-        smsCode: smsCode,
+        smsCode: _smsController.text,
       );
 
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: _controllers['e-mail(id)']!.text,
-        password: _controllers['password']!.text,
-      );
+      await _auth.signInWithCredential(credential);
+      Fluttertoast.showToast(msg: 'Phone number verified successfully!');
 
-      await userCredential.user!.updatePhoneNumber(phoneCredential);
       if (mounted) {
-        await Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeProfile()));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeProfile()),
+        );
       }
     } on FirebaseAuthException catch (e) {
-      // Firebase Authentication 예외 처리
-      if (e.code == 'invalid-verification-code') {
-        Fluttertoast.showToast(msg: '유효하지 않은 인증 코드입니다.');
-      } else if (e.code == 'email-already-in-use') {
-        Fluttertoast.showToast(msg: '이미 사용 중인 이메일입니다.');
-      } else if (e.code == 'weak-password') {
-        Fluttertoast.showToast(msg: '비밀번호가 너무 약합니다.');
-      } else {
-        Fluttertoast.showToast(msg: '회원가입 오류: ${e.message}');
-      }
-    } catch (e) {
-      // 기타 예외 처리
-      Fluttertoast.showToast(msg: '예상치 못한 오류: ${e.toString()}');
+      Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
     }
   }
 
@@ -125,8 +113,6 @@ class _SignupFormState extends State<SignUpForm> {
       controller = TextEditingController();
       _controllers[label.toLowerCase()] = controller;
     }
-    bool showVerificationField =
-        label == 'Phone #' && _visibleFields.contains('VerificationCode');
 
     String? Function(String?)? validator;
     switch (label.toLowerCase()) {
@@ -253,14 +239,6 @@ class _SignupFormState extends State<SignUpForm> {
                       )
                   ],
                 ),
-                if (showVerificationField)
-                  CustomTextFormField(
-                    emptyErrorText: "",
-                    key: const ValueKey('VerificationCode'),
-                    controller: _smsController,
-                    hintText: 'Enter verification code',
-                    onChanged: (value) {},
-                  ),
                 const SizedBox(height: 18),
               ],
             ),
@@ -297,7 +275,15 @@ class _SignupFormState extends State<SignUpForm> {
                   maxHeight: 300,
                 ),
               _buildFormField('Phone #', 'Enter your phone number', false),
-              _buildFormField('Verify #', 'Enter your number', false),
+              if (_visibleFields.contains("Verify #") && _codeSent)
+                CustomTextFormField(
+                  emptyErrorText: "",
+                  key: const ValueKey('VerificationCode'),
+                  controller: _smsController,
+                  hintText: 'Enter verification code',
+                  onChanged: (value) {},
+                ),
+              // _buildFormField('Verify #', 'Enter verification code', false),
               CustomOutlinedButton(
                 backgroundcolor: ColorStyles.orange,
                 width: 374,
@@ -307,7 +293,7 @@ class _SignupFormState extends State<SignUpForm> {
                   if (_formKey.currentState!.validate() &&
                       _verificationId.isNotEmpty) {
                     if (_codeSent) {
-                      _signUpFirebase(_smsController.text);
+                      _signInWithPhoneNumber();
                     } else {
                       Fluttertoast.showToast(
                           msg: 'Please verify your phone number first.');
