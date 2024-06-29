@@ -1,12 +1,15 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/utils/debouce.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:morning_buddies/screens/home.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/throttle.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -79,10 +82,103 @@ class _SignupFormState extends State<SignUpForm> {
     for (var controller in _controllers.values) {
       controller.dispose();
     }
+    _smsController.dispose();
+    _timer?.cancel();
+
     super.dispose();
   }
 
+  //  Timer
+  Timer? _timer;
+  int _remainingSeconds = 120;
+
+  String _formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}'; // 분:초 형식으로 변환
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _timer?.cancel(); // 타이머 종료
+        }
+      });
+    });
+  }
+
+  // Statusbar 계산의 기준이 되는 리스트
+  // textcontroller가 생기면 해당하는 인풋 필드가 리스트에 삽입되는 원리
   final List<String> _visibleFields = ['E-mail(ID)'];
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _verificationId = '';
+  bool _codeSent = false;
+  final TextEditingController _smsController = TextEditingController();
+
+  // SMS 인증번호 발송 및 확인
+  Future<void> _verifyPhoneNumber(String phoneNumber) async {
+    // 01012345678 -> +821012345678로 변경
+    String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    String formattedPhoneNumber = '+82$numericPhoneNumber';
+
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: formattedPhoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          print("코드 전송 완료");
+          setState(() {
+            _verificationId = verificationId;
+            _codeSent = true;
+            _remainingSeconds = 120; // 타이머 초기화
+            _startTimer();
+          });
+        },
+        // 코드 발송후 3분후 Code Time out
+        timeout: const Duration(seconds: 120),
+        codeAutoRetrievalTimeout: (String verificationId) {
+          setState(() {
+            _codeSent = false;
+          });
+          Fluttertoast.showToast(msg: 'Time out, please try again');
+        },
+      );
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: 'Error verifying phone number: $e');
+    }
+  }
+
+  Future<void> _signInWithPhoneNumber(String smsCode) async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: smsCode,
+      );
+
+      await _auth.signInWithCredential(credential);
+      print("Sign-in 성공");
+
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      }
+    } catch (e) {
+      print("에러 메시지: $e"); // Add this error log for debugging
+      Fluttertoast.showToast(msg: 'Incorrect verification code');
+    }
+  }
 
   Widget _buildFormField(String label, String hintText, bool obscuretext) {
     TextEditingController? controller = _controllers[label.toLowerCase()];
@@ -194,24 +290,41 @@ class _SignupFormState extends State<SignUpForm> {
                     ),
                     if (label == 'Phone #' &&
                         _visibleFields.contains('AuthenticationButton'))
-                      OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0)))),
-                          onPressed: () {
-                            /* 
-                              인증하기 버튼 터치시 키보드로 인해
-                              인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
-                            */
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            setState(() => _visibleFields.add('Verify #'));
-                          },
-                          child: const Text(
-                            '인증하기',
-                            style: TextStyle(color: Colors.white),
-                          ))
+                      Column(
+                        children: [
+                          Container(
+                            // width: 76,
+                            padding: const EdgeInsets.all(8.0),
+                            child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                    backgroundColor: Colors.grey,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0)))),
+                                onPressed: () {
+                                  /* 
+                                    인증하기 버튼 터치시 키보드로 인해
+                                    인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
+                                  */
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  _verifyPhoneNumber(
+                                      _controllers['phone #']!.text);
+                                  setState(
+                                      () => _visibleFields.add('Verify #'));
+                                },
+                                child: const Text(
+                                  '인증하기',
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                          ),
+                          if (_remainingSeconds > 0)
+                            Text('${_formatTime(_remainingSeconds)}left',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.red,
+                                )),
+                        ],
+                      )
                   ],
                 ),
                 if (showVerificationField)
@@ -262,9 +375,7 @@ class _SignupFormState extends State<SignUpForm> {
                 text: '회원가입 완료하기',
                 textStyle: const TextStyle(color: Colors.white),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // POST 로직 들어갈 자리
-                  }
+                  _signInWithPhoneNumber(_smsController.text);
                 },
               )
             ],

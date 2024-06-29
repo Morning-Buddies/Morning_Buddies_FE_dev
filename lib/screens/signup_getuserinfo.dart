@@ -39,7 +39,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
           //   style: const TextStyle(fontSize: 16),
           // ),
           barRadius: const Radius.circular(8.0),
-          width: 330,
+          width: 320,
           lineHeight: 16.0,
           percent: _progressPercent <= 0.9
               ? _progressPercent

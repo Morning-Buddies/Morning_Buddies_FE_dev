@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/home.dart';
 import 'package:morning_buddies/screens/onboarding_signUp.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
@@ -73,6 +74,22 @@ class SignIn extends StatelessWidget {
               onPressed: () {
                 // 구글 로그인 로직
               },
+            ),
+            TextButton(
+              onPressed: () {
+                // 회원가입으로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Home()),
+                );
+              },
+              child: const Text(
+                "MainPage 이동용 버튼",
+                style: TextStyle(
+                  color: Colors.red,
+                  decorationThickness: 0.5,
+                ),
+              ),
             ),
           ],
         ),
