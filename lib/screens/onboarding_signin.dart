@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/screens/home.dart';
+import 'package:morning_buddies/screens/home_bottom_nav.dart';
 import 'package:morning_buddies/screens/onboarding_signUp.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
@@ -80,7 +80,8 @@ class SignIn extends StatelessWidget {
                 // 회원가입으로 이동
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Home()),
+                  MaterialPageRoute(
+                      builder: (context) => const HomeBottomNav()),
                 );
               },
               child: const Text(

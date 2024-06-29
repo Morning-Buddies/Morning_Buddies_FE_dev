@@ -13,7 +13,6 @@ class GetUserInfoScrceen extends StatefulWidget {
 class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
   int _visibleFieldCount = 1;
   double _progressPercent = 0.0;
-  // 🚨
   void _updateVisibleFields(int newCount) {
     setState(() {
       _visibleFieldCount = newCount;
