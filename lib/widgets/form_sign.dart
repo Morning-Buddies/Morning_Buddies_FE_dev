@@ -1,12 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:morning_buddies/screens/main_profile.dart';
+import 'package:morning_buddies/screens/home_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -100,7 +100,7 @@ class _SignupFormState extends State<SignUpForm> {
       await userCredential.user!.updatePhoneNumber(phoneCredential);
       if (mounted) {
         await Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const MainProfile()));
+            MaterialPageRoute(builder: (context) => const HomeProfile()));
       }
     } on FirebaseAuthException catch (e) {
       // Firebase Authentication 예외 처리
