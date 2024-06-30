@@ -87,7 +87,6 @@ class SignIn extends StatelessWidget {
                 "MainPage 이동용 버튼",
                 style: TextStyle(
                   color: Colors.red,
-                  decorationThickness: 0.5,
                 ),
               ),
             ),
