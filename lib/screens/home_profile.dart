@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
+import 'package:morning_buddies/widgets/custom_dropdown.dart';
 
 class HomeProfile extends StatefulWidget {
   const HomeProfile({super.key});
@@ -58,7 +59,7 @@ class _HomeProfileState extends State<HomeProfile> {
 class _ProfileCard extends StatelessWidget {
   final String name;
 
-  const _ProfileCard({super.key, required this.name});
+  const _ProfileCard({required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,6 @@ class _ProfileCard extends StatelessWidget {
             Expanded(
               // Expanded 추가
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     name,
@@ -101,7 +101,7 @@ class _ProfileCard extends StatelessWidget {
 class _SectionTitle extends StatelessWidget {
   final String title;
 
-  const _SectionTitle(this.title, {super.key});
+  const _SectionTitle(this.title);
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class _SectionWithButton extends StatelessWidget {
   final String title;
   final String buttonText;
 
-  const _SectionWithButton(this.title, this.buttonText, {super.key});
+  const _SectionWithButton(this.title, this.buttonText);
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +142,7 @@ class _SectionWithButton extends StatelessWidget {
 class _BorderedTextButton extends StatelessWidget {
   final String text;
 
-  const _BorderedTextButton(this.text, {super.key});
+  const _BorderedTextButton(this.text);
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +179,7 @@ class _BorderedTextButton extends StatelessWidget {
 
 // Upgrade Card
 class _UpgradeCard extends StatelessWidget {
-  const _UpgradeCard({super.key});
+  const _UpgradeCard();
 
   @override
   Widget build(BuildContext context) {
@@ -227,8 +227,8 @@ class TimePreferenceRow extends StatefulWidget {
 }
 
 class _TimePreferenceRowState extends State<TimePreferenceRow> {
-  String _selectedTime = '07:00';
-  bool _isEditing = false; // Track editing state
+  String _selectedTime = '07:00 AM';
+  bool isEditing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -255,78 +255,40 @@ class _TimePreferenceRowState extends State<TimePreferenceRow> {
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
-                  if (_isEditing) // Dropdown for editing
-                    DropdownButton<String>(
-                      value: _selectedTime,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedTime = newValue!;
-                        });
-                      },
-                      items: <String>[
-                        '00:00',
-                        '01:00',
-                        '02:00',
-                        '03:00',
-                        '04:00',
-                        '05:00',
-                        '06:00',
-                        '07:00',
-                        '08:00',
-                        '09:00',
-                        '10:00',
-                        '11:00',
-                        '12:00',
-                        '13:00',
-                        '14:00',
-                        '15:00',
-                        '16:00',
-                        '17:00',
-                        '18:00',
-                        '19:00',
-                        '20:00',
-                        "21:00",
-                        "22:00",
-                        "23:00",
-                        "24:00",
-                        // Add more time options here
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    )
-                  else // Text display for non-editing
-                    Container(
-                      width: 156,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: ColorStyles.secondaryOrange),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            _selectedTime,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isEditing = true; // Start editing
-                              });
-                            },
-                            child: const Text("edit",
-                                style: TextStyle(
-                                  fontSize: 8,
-                                  color: ColorStyles.secondaryOrange,
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
+                  CustomDropdown(
+                    value: _selectedTime,
+                    items: const <String>[
+                      '00:00 AM',
+                      '01:00 AM',
+                      '02:00 AM',
+                      '03:00 AM',
+                      '04:00 AM',
+                      '05:00 AM',
+                      '06:00 AM',
+                      '07:00 AM',
+                      '08:00 AM',
+                      '09:00 AM',
+                      '10:00 AM',
+                      '11:00 AM',
+                      '12:00 AM',
+                      '13:00 PM',
+                      '14:00 PM',
+                      '15:00 PM',
+                      '16:00 PM',
+                      '17:00 PM',
+                      '18:00 PM',
+                      '19:00 PM',
+                      '20:00 PM',
+                      "21:00 PM",
+                      "22:00 PM",
+                      "23:00 PM",
+                    ],
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedTime = newValue;
+                      });
+                    },
+                  )
                 ],
               ),
             ),
@@ -422,7 +384,7 @@ class GroupStatus {
 class _GroupStatusCard extends StatelessWidget {
   final GroupStatus group;
 
-  const _GroupStatusCard({super.key, required this.group});
+  const _GroupStatusCard({required this.group});
 
   @override
   Widget build(BuildContext context) {

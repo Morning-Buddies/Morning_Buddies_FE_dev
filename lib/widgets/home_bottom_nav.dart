@@ -15,10 +15,10 @@ class HomeBottomNav extends StatefulWidget {
 class _HomeBottomNavState extends State<HomeBottomNav> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    HomeMain(),
-    HomeCreate(),
-    HomeChat(),
-    HomeProfile(),
+    const HomeMain(),
+    const HomeCreate(),
+    const HomeChat(),
+    const HomeProfile(),
   ];
 
   void _onTabTapped(int index) {
