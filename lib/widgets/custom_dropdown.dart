@@ -46,12 +46,6 @@ class _CustomDropdownState extends State<CustomDropdown> {
     });
   }
 
-  // @override
-  // void didUpdateWidget(covariant CustomDropdown oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   _createOverlay(); // 위젯 업데이트 시 Overlay 다시 생성
-  // }
-
   void _createOverlay() {
     _overlayEntry?.remove(); // 기존 OverlayEntry 제거
     _overlayEntry = OverlayEntry(
@@ -63,19 +57,22 @@ class _CustomDropdownState extends State<CustomDropdown> {
           offset: const Offset(0.0, 32.0), // DropdownButton 아래에 위치하도록 조정
           child: Material(
             elevation: 4.0,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              children: widget.items.map((String item) {
-                return ListTile(
-                  title: Text(item),
-                  onTap: () {
-                    widget.onChanged(item);
-                    _overlayEntry?.remove();
-                    _overlayEntry = null;
-                  },
-                );
-              }).toList(),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5, // 화면 높이의 절반
+              child: ListView(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                children: widget.items.map((String item) {
+                  return ListTile(
+                    title: Text(item),
+                    onTap: () {
+                      widget.onChanged(item);
+                      _overlayEntry?.remove();
+                      _overlayEntry = null;
+                    },
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ),

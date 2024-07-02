@@ -4,6 +4,36 @@ A new Flutter project.
 
 ## lib 디렉토리 구조
 ```
+
+📦lib
+ ┣ 📂models
+ ┣ 📂screens
+ ┃ ┣ 📂home
+ ┃ ┃ ┣ 📜home_chat.dart
+ ┃ ┃ ┣ 📜home_create.dart
+ ┃ ┃ ┣ 📜home_main.dart
+ ┃ ┃ ┣ 📜home_profile.dart
+ ┃ ┃ ┗ 📜home_setting.dart
+ ┃ ┣ 📂onboarding
+ ┃ ┃ ┣ 📜onboarding_signin.dart
+ ┃ ┃ ┗ 📜onboarding_signup.dart
+ ┃ ┗ 📜signup_getuserinfo.dart
+ ┣ 📂service
+ ┣ 📂utils
+ ┃ ┣ 📜debouce.dart
+ ┃ ┣ 📜design_palette.dart
+ ┃ ┣ 📜throttle.dart
+ ┃ ┗ 📜validator.dart
+ ┣ 📂widgets
+ ┃ ┣ 📜custom_dropdown.dart
+ ┃ ┣ 📜custom_form_field.dart
+ ┃ ┣ 📜custom_outlined_button.dart
+ ┃ ┣ 📜form_login.dart
+ ┃ ┣ 📜form_sign.dart
+ ┃ ┣ 📜home_bottom_nav.dart
+ ┃ ┗ 📜signup_dropdown.dart
+ ┣ 📜firebase_options.dart
+ ┗ 📜main.dart
 📦lib
  ┣ 📂models
     - 앱에서 사용되는 데이터 모델

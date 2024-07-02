@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_dropdown.dart';
 
@@ -84,7 +85,13 @@ class _ProfileCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {}, // 설정 화면 이동 로직 추가
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeSetting()),
+                      );
+                    },
                     icon: const Icon(Icons.settings),
                   ),
                 ],
@@ -270,18 +277,7 @@ class _TimePreferenceRowState extends State<TimePreferenceRow> {
                       '09:00 AM',
                       '10:00 AM',
                       '11:00 AM',
-                      '12:00 AM',
-                      '13:00 PM',
-                      '14:00 PM',
-                      '15:00 PM',
-                      '16:00 PM',
-                      '17:00 PM',
-                      '18:00 PM',
-                      '19:00 PM',
-                      '20:00 PM',
-                      "21:00 PM",
-                      "22:00 PM",
-                      "23:00 PM",
+                      '12:00 PM',
                     ],
                     onChanged: (newValue) {
                       setState(() {

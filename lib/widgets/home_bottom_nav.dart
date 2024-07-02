@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/screens/home_chat.dart';
-import 'package:morning_buddies/screens/home_create.dart';
-import 'package:morning_buddies/screens/home_main.dart';
-import 'package:morning_buddies/screens/home_profile.dart';
+import 'package:morning_buddies/screens/home/home_chat.dart';
+import 'package:morning_buddies/screens/home/home_create.dart';
+import 'package:morning_buddies/screens/home/home_main.dart';
+import 'package:morning_buddies/screens/home/home_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class HomeBottomNav extends StatefulWidget {
