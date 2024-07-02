@@ -30,8 +30,10 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         selectedItemColor: ColorStyles.secondaryOrange,
         currentIndex: _currentIndex,
         onTap: (value) {
