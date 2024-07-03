@@ -3,6 +3,7 @@ import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_dropdown.dart';
+import 'package:morning_buddies/widgets/section_with_btn.dart';
 
 class HomeProfile extends StatefulWidget {
   const HomeProfile({super.key});
@@ -44,11 +45,19 @@ class _HomeProfileState extends State<HomeProfile> {
             const _SectionTitle("Your Performance"),
             const PerformanceCard(),
             const SizedBox(height: 16.0),
-            const _SectionWithButton("Subscription", "View Details"),
+            SectionWithButton(
+              title: "Subscription",
+              buttonText: "Vew Details",
+              onPressed: () {},
+            ),
             const SizedBox(height: 16.0),
             const _UpgradeCard(),
             const SizedBox(height: 16.0),
-            const _SectionWithButton("Your Groups", "View Details"),
+            SectionWithButton(
+              title: "Your Groups",
+              buttonText: "View Details",
+              onPressed: () {},
+            ),
             GroupStatusList(groups: _groups),
           ],
         ),
@@ -128,62 +137,8 @@ class _SectionTitle extends StatelessWidget {
 }
 
 // Section with Button
-class _SectionWithButton extends StatelessWidget {
-  final String title;
-  final String buttonText;
-
-  const _SectionWithButton(this.title, this.buttonText);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _SectionTitle(title),
-        _BorderedTextButton(buttonText),
-      ],
-    );
-  }
-}
 
 // Bordered Text Button
-class _BorderedTextButton extends StatelessWidget {
-  final String text;
-
-  const _BorderedTextButton(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {},
-      style: ButtonStyle(
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: const BorderSide(color: ColorStyles.secondaryOrange),
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text,
-            style: const TextStyle(
-              color: ColorStyles.secondaryOrange,
-              fontSize: 12,
-            ),
-          ),
-          const Icon(
-            Icons.keyboard_arrow_right,
-            color: ColorStyles.secondaryOrange,
-            size: 16.0,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // Upgrade Card
 class _UpgradeCard extends StatelessWidget {
