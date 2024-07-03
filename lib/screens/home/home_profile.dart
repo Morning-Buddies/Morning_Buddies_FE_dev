@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
+import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_dropdown.dart';
 
@@ -190,41 +191,49 @@ class _UpgradeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 360,
-      height: 80,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: const Color(0x10ABABB5),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
-            children: [
-              Image.asset(
-                "assets/images/add_custom_icon.png", // 이미지 경로 확인
-              ),
-              const SizedBox(height: 4.0),
-              const Text(
-                "Upgrade to a Pro-Mode\nJoin in more groups", // 텍스트 한 줄로 합침
-                style: TextStyle(
-                  fontSize: 10,
-                  color: ColorStyles.secondaryOrange,
-                  fontStyle: FontStyle.italic,
+    return GestureDetector(
+      onTap: () {
+        // Subscription 결제 화면 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SubscriptionScreen()),
+        );
+        print("결제 화면 이동");
+      },
+      child: Container(
+        width: 360,
+        height: 80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: const Color(0x10ABABB5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // 중앙 정렬
+              children: [
+                Image.asset(
+                  "assets/images/add_custom_icon.png", // 이미지 경로 확인
                 ),
-                textAlign: TextAlign.center, // 텍스트 중앙 정렬
-              ),
-            ],
+                const SizedBox(height: 4.0),
+                const Text(
+                  "Upgrade to a Pro-Mode\nJoin in more groups", // 텍스트 한 줄로 합침
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: ColorStyles.secondaryOrange,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-// 기존 TimePreferenceRow, PerformanceCard 클래스는 변경 없음
 
 class TimePreferenceRow extends StatefulWidget {
   const TimePreferenceRow({super.key});

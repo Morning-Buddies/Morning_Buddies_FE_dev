@@ -80,7 +80,9 @@ class _PasswordResetState extends State<PasswordReset> {
               width: 374,
               text: 'Change All Set',
               textStyle: const TextStyle(color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                _formKey.currentState!.validate();
+              },
             ),
           )
         ],
