@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/screens/home_chat.dart';
-import 'package:morning_buddies/screens/home_create.dart';
-import 'package:morning_buddies/screens/home_main.dart';
-import 'package:morning_buddies/screens/home_profile.dart';
+import 'package:morning_buddies/screens/home/home_chat.dart';
+import 'package:morning_buddies/screens/home/home_create.dart';
+import 'package:morning_buddies/screens/home/home_main.dart';
+import 'package:morning_buddies/screens/home/home_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class HomeBottomNav extends StatefulWidget {
@@ -15,10 +15,10 @@ class HomeBottomNav extends StatefulWidget {
 class _HomeBottomNavState extends State<HomeBottomNav> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
-    HomeMain(),
-    HomeCreate(),
-    HomeChat(),
-    HomeProfile(),
+    const HomeMain(),
+    const HomeCreate(),
+    const HomeChat(),
+    const HomeProfile(),
   ];
 
   void _onTabTapped(int index) {
@@ -30,8 +30,10 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         selectedItemColor: ColorStyles.secondaryOrange,
         currentIndex: _currentIndex,
         onTap: (value) {

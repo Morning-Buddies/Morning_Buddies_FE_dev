@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/screens/onboarding_signin.dart';
+import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
