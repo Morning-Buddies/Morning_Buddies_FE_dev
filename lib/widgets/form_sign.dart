@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:morning_buddies/screens/home/home_profile.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
+import 'dart:async'; // Import for Timer
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -23,6 +24,9 @@ class SignUpForm extends StatefulWidget {
 class _SignupFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
 
+  Timer? _timer;
+  int _secondsRemaining = 120;
+
   // TextController
   final Map<String, TextEditingController> _controllers = {
     'email': TextEditingController(),
@@ -37,7 +41,21 @@ class _SignupFormState extends State<SignUpForm> {
     for (var controller in _controllers.values) {
       controller.dispose();
     }
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+        } else {
+          _timer?.cancel();
+          Fluttertoast.showToast(msg: 'Code timed out. Please try again.');
+        }
+      });
+    });
   }
 
   // Statusbar 계산의 기준이 되는 리스트
@@ -71,6 +89,7 @@ class _SignupFormState extends State<SignUpForm> {
             _verificationId = verificationId;
             _codeSent = true;
             _visibleFields.add('Verify #');
+            _startTimer();
           });
         },
         // 코드 발송후 2분후 Code Time out
@@ -99,7 +118,7 @@ class _SignupFormState extends State<SignUpForm> {
       if (mounted) {
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomeProfile()),
+          MaterialPageRoute(builder: (context) => const HomeBottomNav()),
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -217,25 +236,37 @@ class _SignupFormState extends State<SignUpForm> {
                       Container(
                         // width: 76,
                         padding: const EdgeInsets.all(8.0),
-                        child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                                backgroundColor: Colors.grey,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0)))),
-                            onPressed: () {
-                              /* 
-                                인증하기 버튼 터치시 키보드로 인해
-                                인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
-                              */
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              _verifyPhoneNumber(_controllers['phone #']!.text);
-                              setState(() => _visibleFields.add('Verify #'));
-                            },
-                            child: const Text(
-                              '인증하기',
-                              style: TextStyle(color: Colors.white),
-                            )),
+                        child: Column(
+                          children: [
+                            OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                    backgroundColor: Colors.grey,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0)))),
+                                onPressed: () {
+                                  /* 
+                                    인증하기 버튼 터치시 키보드로 인해
+                                    인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
+                                  */
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  _verifyPhoneNumber(
+                                      _controllers['phone #']!.text);
+                                  setState(
+                                      () => _visibleFields.add('Verify #'));
+                                },
+                                child: const Text(
+                                  '인증하기',
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                            if (_codeSent)
+                              Text(
+                                '${(_secondsRemaining / 60).floor()}:${(_secondsRemaining % 60).toString().padLeft(2, '0')}left',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.red),
+                              ),
+                          ],
+                        ),
                       )
                   ],
                 ),

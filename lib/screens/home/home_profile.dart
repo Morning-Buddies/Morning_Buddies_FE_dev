@@ -34,32 +34,35 @@ class _HomeProfileState extends State<HomeProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const _ProfileCard(name: "John Doe"),
-            const SizedBox(height: 16.0),
-            const _SectionTitle("Your Performance"),
-            const PerformanceCard(),
-            const SizedBox(height: 16.0),
-            SectionWithButton(
-              title: "Subscription",
-              buttonText: "Vew Details",
-              onPressed: () {},
-            ),
-            const SizedBox(height: 16.0),
-            const _UpgradeCard(),
-            const SizedBox(height: 16.0),
-            SectionWithButton(
-              title: "Your Groups",
-              buttonText: "View Details",
-              onPressed: () {},
-            ),
-            GroupStatusList(groups: _groups),
-          ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const _ProfileCard(name: "John Doe"),
+              const SizedBox(height: 16.0),
+              const _SectionTitle("Your Performance"),
+              const PerformanceCard(),
+              const SizedBox(height: 16.0),
+              SectionWithButton(
+                title: "Subscription",
+                buttonText: "Vew Details",
+                onPressed: () {},
+              ),
+              const SizedBox(height: 16.0),
+              const _UpgradeCard(),
+              const SizedBox(height: 16.0),
+              SectionWithButton(
+                title: "Your Groups",
+                buttonText: "View Details",
+                onPressed: () {},
+              ),
+              GroupStatusList(groups: _groups),
+            ],
+          ),
         ),
       ),
     );
