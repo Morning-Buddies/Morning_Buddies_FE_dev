@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/home/home_search.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/section_with_btn.dart';
 
@@ -55,6 +56,11 @@ class _HomeMainState extends State<HomeMain> {
             icon: const Icon(Icons.search, color: Colors.black), // 검색 아이콘
             onPressed: () {
               // Serach page 이동
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeSearch(),
+                  ));
             },
           ),
           const SizedBox(width: 16) // 오른쪽 패딩 추가
