@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -58,7 +59,15 @@ class _HomeProfileState extends State<HomeProfile> {
               SectionWithButton(
                 title: "Your Groups",
                 buttonText: "View Details",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeGroupDetail(
+                            // 상태관리 라이브러리 사용이 필요합니다/
+                            ),
+                      ));
+                },
               ),
               GroupStatusList(groups: _groups),
             ],
@@ -138,10 +147,6 @@ class _SectionTitle extends StatelessWidget {
     );
   }
 }
-
-// Section with Button
-
-// Bordered Text Button
 
 // Upgrade Card
 class _UpgradeCard extends StatelessWidget {
