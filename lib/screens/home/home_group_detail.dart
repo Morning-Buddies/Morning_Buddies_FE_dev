@@ -13,11 +13,18 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("My Groups"),
         backgroundColor: Colors.white,
       ),
       body: Column(
-        children: [],
+        children: [
+          Divider(),
+          const SizedBox(height: 4),
+          Container(
+            width: 390,
+            height: 200,
+            decoration: const BoxDecoration(color: Colors.grey),
+          ),
+        ],
       ),
     );
   }
