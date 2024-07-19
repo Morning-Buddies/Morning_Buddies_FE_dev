@@ -34,6 +34,10 @@ A new Flutter project.
  ┃ ┗ 📜signup_dropdown.dart
  ┣ 📜firebase_options.dart
  ┗ 📜main.dart
+
+   
+
+   
 📦lib
  ┣ 📂models
     - 앱에서 사용되는 데이터 모델

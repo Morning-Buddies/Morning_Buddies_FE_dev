@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_search.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/section_with_btn.dart';
@@ -114,33 +115,41 @@ class _HomeMainState extends State<HomeMain> {
         itemCount: groupData.length,
         itemBuilder: (context, index) {
           final group = groupData[index];
-          return Container(
-            margin: const EdgeInsets.only(right: 16),
-            width: 120, // 각 아이템의 너비 조절
-            height: 135, // 이미지 높이
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end, // 하단 정렬
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      width: 120,
-                      height: 80,
-                      child: Image.asset("assets/images/example.png")),
-                  Text(group['title'],
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black)),
-                  Text(group['time'],
-                      style: const TextStyle(
-                          fontSize: 12, color: ColorStyles.orange)),
-                  Text(group['participants'],
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black)),
-                ],
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HomeGroupDetail()));
+            },
+            child: Container(
+              margin: const EdgeInsets.only(right: 16),
+              width: 120, // 각 아이템의 너비 조절
+              height: 135, // 이미지 높이
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end, // 하단 정렬
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                        width: 120,
+                        height: 80,
+                        child: Image.asset("assets/images/example.png")),
+                    Text(group['title'],
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black)),
+                    Text(group['time'],
+                        style: const TextStyle(
+                            fontSize: 12, color: ColorStyles.orange)),
+                    Text(group['participants'],
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black)),
+                  ],
+                ),
               ),
             ),
           );

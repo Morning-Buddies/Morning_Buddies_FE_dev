@@ -67,36 +67,47 @@ class _HomeCreateState extends State<HomeCreate> {
           "My Groups",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed("/main");
+            },
+            icon: const Icon(Icons.arrow_back)),
       ),
-      body: Column(
-        children: [
-          const Divider(),
-          const SizedBox(height: 16),
-          _buildPhotoArea(),
-          const SizedBox(height: 16),
-          _buildInputArea(),
-          SizedBox(
-            width: 380,
-            height: 42,
-            child: OutlinedButton(
-                onPressed: _isFormFilled ? () {} : null,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor:
-                      _isFormFilled ? ColorStyles.orange : Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const Divider(),
+            const SizedBox(height: 16),
+            _buildPhotoArea(),
+            const SizedBox(height: 16),
+            _buildInputArea(),
+            SizedBox(
+              width: 380,
+              height: 42,
+              child: OutlinedButton(
+                  onPressed: _isFormFilled
+                      ? () {
+                          // POST Logic will be here
+                        }
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor:
+                        _isFormFilled ? ColorStyles.orange : Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    side: const BorderSide(color: Colors.transparent),
                   ),
-                  side: const BorderSide(color: Colors.transparent),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  child: Text(
-                    "Create Group",
-                    style: TextStyle(color: Colors.white, fontSize: 10.0),
-                  ),
-                )),
-          )
-        ],
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Text(
+                      "Create Group",
+                      style: TextStyle(color: Colors.white, fontSize: 10.0),
+                    ),
+                  )),
+            )
+          ],
+        ),
       ),
     );
   }
