@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signup.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -32,14 +33,7 @@ class SignIn extends StatelessWidget {
                     alignment: Alignment.topRight,
                     // 회원가입으로 이동하는 textbtn
                     child: TextButton(
-                      onPressed: () {
-                        // 회원가입으로 이동
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUp()),
-                        );
-                      },
+                      onPressed: () => Get.to(const SignUp()),
                       child: const Text(
                         "아직 회원이 아니신가요?",
                         style: TextStyle(
@@ -76,15 +70,9 @@ class SignIn extends StatelessWidget {
               },
             ),
             TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HomeBottomNav()),
-                );
-              },
+              onPressed: () => Get.to(const HomeBottomNav()),
               child: const Text(
-                "MainPage 이동용 버튼",
+                "[Debug]MainPage 이동용 버튼",
                 style: TextStyle(
                   color: Colors.red,
                 ),
