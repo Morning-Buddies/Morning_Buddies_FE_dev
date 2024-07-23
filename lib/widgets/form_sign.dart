@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
@@ -116,10 +117,7 @@ class _SignupFormState extends State<SignUpForm> {
       Fluttertoast.showToast(msg: 'Phone number verified successfully!');
 
       if (mounted) {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeBottomNav()),
-        );
+        await Get.to(const HomeBottomNav());
       }
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
