@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_form_field.dart';
@@ -67,10 +68,9 @@ class _HomeCreateState extends State<HomeCreate> {
           "My Groups",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        // 뒤로가기
         leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed("/main");
-            },
+            onPressed: () => Get.toNamed("/main"),
             icon: const Icon(Icons.arrow_back)),
       ),
       body: SingleChildScrollView(

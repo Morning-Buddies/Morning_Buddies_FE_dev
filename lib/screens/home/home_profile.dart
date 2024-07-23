@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/home/my_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
@@ -57,18 +58,11 @@ class _HomeProfileState extends State<HomeProfile> {
               const _UpgradeCard(),
               const SizedBox(height: 16.0),
               SectionWithButton(
-                title: "Your Groups",
-                buttonText: "View Details",
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyGroupDetail(
-                            // 상태관리 라이브러리 사용이 필요합니다/
-                            ),
-                      ));
-                },
-              ),
+                  title: "Your Groups",
+                  buttonText: "View Details",
+                  // 💡 라우트 관리 + 상태관리 필요
+                  onPressed: () =>
+                      Get.to(const MyGroupDetail(), arguments: _groups)),
               GroupStatusList(groups: _groups),
             ],
           ),
