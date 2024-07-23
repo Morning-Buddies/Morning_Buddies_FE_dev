@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,14 +20,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Morning Buddies',
       initialRoute: '/signin',
-      routes: {
-        '/signin': (context) => const SignIn(),
-        '/main': (context) => const HomeBottomNav(),
-      },
-      home: const SignIn(),
+      getPages: [
+        GetPage(name: '/signin', page: () => const SignIn()),
+        GetPage(name: '/main', page: () => const HomeBottomNav())
+      ],
+      // routes: {
+      //   '/signin': (context) => const SignIn(),
+      //   '/main': (context) => const HomeBottomNav(),
+      // },
+      // home: const SignIn(),
     );
   }
 }
