@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
@@ -8,6 +9,7 @@ import 'package:morning_buddies/widgets/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'package:morning_buddies/widgets/signup_dropdown.dart';
 import 'dart:async'; // Import for Timer
+import 'package:http/http.dart' as http;
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -26,6 +28,7 @@ class _SignupFormState extends State<SignUpForm> {
 
   Timer? _timer;
   int _secondsRemaining = 120;
+  String? _selectedWakeUpTime;
 
   // TextController
   final Map<String, TextEditingController> _controllers = {
@@ -35,6 +38,33 @@ class _SignupFormState extends State<SignUpForm> {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
   };
+
+  String apiKey = dotenv.get("PROJECT_API_KEY");
+
+  Future<void> _submitFormData() async {
+    final Map<String, String> formData = {
+      'email': _controllers['e-mail(id)']!.text,
+      'password': _controllers['password']!.text,
+      'firstName': _controllers['first name']!.text,
+      'lastName': _controllers['last name']!.text,
+      'phone': _controllers['phone #']!.text,
+      'preferredTime': _selectedWakeUpTime!
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiKey),
+        body: formData,
+      );
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: '회원가입이 완료되었습니다.');
+      } else {
+        Fluttertoast.showToast(msg: '회원가입에 실패했습니다.');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: '오류가 발생했습니다: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -115,6 +145,8 @@ class _SignupFormState extends State<SignUpForm> {
       await _auth.signInWithCredential(credential);
       Fluttertoast.showToast(msg: 'Phone number verified successfully!');
 
+      await _submitFormData();
+
       if (mounted) {
         await Navigator.push(
           context,
@@ -127,6 +159,7 @@ class _SignupFormState extends State<SignUpForm> {
   }
 
   Widget _buildFormField(String label, String hintText, bool obscuretext) {
+    // controller 소문자임 정신차리자
     TextEditingController? controller = _controllers[label.toLowerCase()];
     if (controller == null) {
       controller = TextEditingController();
@@ -298,8 +331,12 @@ class _SignupFormState extends State<SignUpForm> {
               _buildFormField('Last Name', 'Doe', false),
               if (_visibleFields.contains('Dropdown'))
                 HoursDropdown(
+                  selectedHour: _selectedWakeUpTime,
                   onChanged: (value) {
+                    print(value);
                     setState(() {
+                      _selectedWakeUpTime = value;
+
                       _visibleFields.add('Phone #');
                     });
                   },
