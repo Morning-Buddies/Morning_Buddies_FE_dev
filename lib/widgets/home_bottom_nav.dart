@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/state_manager.dart';
+import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/home_chat.dart';
 import 'package:morning_buddies/screens/home/home_create.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
 import 'package:morning_buddies/screens/home/home_profile.dart';
+import 'package:morning_buddies/service/time_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class HomeBottomNav extends StatefulWidget {
@@ -13,6 +16,22 @@ class HomeBottomNav extends StatefulWidget {
 }
 
 class _HomeBottomNavState extends State<HomeBottomNav> {
+  final TimeService _timeService = TimeService();
+  // TargetTime
+  String targetTime = "15:31";
+
+  // String to DateTime
+  DateTime convertToDateTime(String targetTime) {
+    DateTime now = DateTime.now();
+    List<String> timeParts = targetTime.split(":");
+    int hour = int.parse(timeParts[0]);
+    int minute = int.parse(timeParts[1]);
+
+    return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  late DateTime convertedTargetTime = convertToDateTime(targetTime);
+
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomeMain(),
@@ -25,6 +44,26 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _timeService.dispose();
+    super.dispose();
+  }
+
+  void _navigateToGameScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const GameStart()),
+    );
   }
 
   @override
