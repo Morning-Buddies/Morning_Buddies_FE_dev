@@ -29,9 +29,9 @@ class _GamePageState extends State<GamePage> {
                   child: Padding(
                     padding: EdgeInsets.all(12.0),
                     child: Image(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       image: AssetImage(
-                          '../../assets/images/main_logo.png'), // 여기에 생성형 AI로 만든 이미지 들어가야 함
+                          'assets/images/main_logo.png'), // 여기에 생성형 AI로 만든 이미지 들어가야 함
                     ),
                   ),
                 ),
