@@ -18,7 +18,7 @@ class HomeBottomNav extends StatefulWidget {
 class _HomeBottomNavState extends State<HomeBottomNav> {
   final TimeService _timeService = TimeService();
   // TargetTime
-  String targetTime = "15:31";
+  String targetTime = "19:31";
 
   // String to DateTime
   DateTime convertToDateTime(String targetTime) {
@@ -50,7 +50,9 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
+    });
   }
 
   @override
