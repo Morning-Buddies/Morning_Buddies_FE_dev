@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:morning_buddies/models/group_controller.dart';
 
 class MyGroupDetail extends StatefulWidget {
   const MyGroupDetail({super.key});
@@ -9,20 +11,26 @@ class MyGroupDetail extends StatefulWidget {
 }
 
 class _MyGroupDetailState extends State<MyGroupDetail> {
-  /* 
-    💡 현재 List<GroupList> 를 받아오면 됨,
-    다만, 기본 데이터 타입과 Map형태만을 지원하기에 직렬화가 필요
-  */
+  final GroupStatusController groupStatusController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
         backgroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [],
-      ),
-    );
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+        ),
+        body: Obx(() {
+          return ListView.builder(
+              itemCount: groupStatusController.groups.length,
+              itemBuilder: (context, index) {
+                final group = groupStatusController.groups[index];
+                return ListTile(
+                  title: Text(group.name),
+                  subtitle:
+                      Text('Status: ${group.status} | Time: ${group.time}'),
+                );
+              });
+        }));
   }
 }

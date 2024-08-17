@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:morning_buddies/models/group_controller.dart';
+import 'package:morning_buddies/screens/home/home_chat.dart';
+import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
+import 'package:morning_buddies/screens/home/home_profile.dart';
+import 'package:morning_buddies/screens/home/home_search.dart';
+import 'package:morning_buddies/screens/home/home_setting.dart';
+import 'package:morning_buddies/screens/home/my_group_detail.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
@@ -20,18 +28,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Get.put(GroupStatusController()); // Group Mock Data
+
     return GetMaterialApp(
       title: 'Morning Buddies',
       initialRoute: '/signin',
       getPages: [
         GetPage(name: '/signin', page: () => const SignIn()),
-        GetPage(name: '/main', page: () => const HomeBottomNav())
+        GetPage(name: '/main', page: () => const HomeBottomNav()),
+        GetPage(name: '/home_main', page: () => const HomeMain()),
+        GetPage(name: '/chat', page: () => const HomeChat()),
+        GetPage(name: '/profile', page: () => const HomeProfile()),
+        GetPage(name: '/search', page: () => const HomeSearch()),
+        GetPage(name: '/setting', page: () => const HomeSetting()),
+        GetPage(
+            name: '/home_group_detail', page: () => const HomeGroupDetail()),
+        GetPage(name: '/my_group_detail', page: () => const MyGroupDetail()),
       ],
-      // routes: {
-      //   '/signin': (context) => const SignIn(),
-      //   '/main': (context) => const HomeBottomNav(),
-      // },
-      // home: const SignIn(),
     );
   }
 }

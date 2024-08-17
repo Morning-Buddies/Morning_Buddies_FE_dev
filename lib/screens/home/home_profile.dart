@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:morning_buddies/models/group_controller.dart';
 import 'package:morning_buddies/screens/home/my_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
@@ -15,27 +17,29 @@ class HomeProfile extends StatefulWidget {
 }
 
 class _HomeProfileState extends State<HomeProfile> {
-  final List<GroupStatus> _groups = [
-    GroupStatus(
-      name: "Group 1",
-      status: "Missed",
-      time: "6:30 AM",
-    ),
-    GroupStatus(
-      name: "Group 2",
-      status: "Dismissed",
-      time: "7:00 AM",
-    ),
-    GroupStatus(
-      name: "Group 3",
-      status: "Dismissed",
-      time: "8:00 AM",
-    ),
-    // 더 많은 그룹 추가
-  ];
+  // final List<GroupStatus> _groups = [
+  //   GroupStatus(
+  //     name: "Group 1",
+  //     status: "Missed",
+  //     time: "6:30 AM",
+  //   ),
+  //   GroupStatus(
+  //     name: "Group 2",
+  //     status: "Dismissed",
+  //     time: "7:00 AM",
+  //   ),
+  //   GroupStatus(
+  //     name: "Group 3",
+  //     status: "Dismissed",
+  //     time: "8:00 AM",
+  //   ),
+  //   // 더 많은 그룹 추가
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    final GroupStatusController groupStatusController = Get.find();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -61,9 +65,8 @@ class _HomeProfileState extends State<HomeProfile> {
                   title: "Your Groups",
                   buttonText: "View Details",
                   // 💡 라우트 관리 + 상태관리 필요
-                  onPressed: () =>
-                      Get.to(const MyGroupDetail(), arguments: _groups)),
-              GroupStatusList(groups: _groups),
+                  onPressed: () => Get.toNamed('/my_group_detail')),
+              const GroupStatusList(),
             ],
           ),
         ),
@@ -312,35 +315,29 @@ class PerformanceCard extends StatelessWidget {
 }
 
 class GroupStatusList extends StatelessWidget {
-  final List<GroupStatus> groups;
-
-  const GroupStatusList({super.key, required this.groups});
-
+  const GroupStatusList({super.key});
   @override
   Widget build(BuildContext context) {
+    final GroupStatusController groupStatusController = Get.find();
     return SizedBox(
       height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: groups.length + 1, // 추가된 "Upgrade" 카드
-        itemBuilder: (context, index) {
-          if (index < groups.length) {
-            return _GroupStatusCard(group: groups[index]);
-          } else {
-            return const _UpgradeCard();
-          }
-        },
-      ),
+      child: Obx(() {
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount:
+              groupStatusController.groups.length + 1, // 추가된 "Upgrade" 카드
+          itemBuilder: (context, index) {
+            if (index < groupStatusController.groups.length) {
+              return _GroupStatusCard(
+                  group: groupStatusController.groups[index]);
+            } else {
+              return const _UpgradeCard();
+            }
+          },
+        );
+      }),
     );
   }
-}
-
-class GroupStatus {
-  final String name;
-  final String status;
-  final String time;
-
-  GroupStatus({required this.name, required this.status, required this.time});
 }
 
 class _GroupStatusCard extends StatelessWidget {
