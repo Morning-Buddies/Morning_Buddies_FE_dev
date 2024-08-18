@@ -10,6 +10,9 @@ class GroupStatus {
 
 class GroupStatusController extends GetxController {
   var groups = <GroupStatus>[].obs;
+  void removeGroup(GroupStatus group) {
+    groups.remove(group);
+  }
 
   @override
   void onInit() {
@@ -23,4 +26,3 @@ class GroupStatusController extends GetxController {
     super.onInit();
   }
 }
-

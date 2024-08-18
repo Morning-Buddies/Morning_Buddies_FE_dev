@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:morning_buddies/screens/home/home_group_detail.dart';
-import 'package:morning_buddies/screens/home/home_search.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/section_with_btn.dart';
 
