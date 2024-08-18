@@ -49,3 +49,6 @@ firebase_options.dart
 GoogleService-Info.plist
 firebase.json
 google-services.json
+
+# Project Settings
+*.env

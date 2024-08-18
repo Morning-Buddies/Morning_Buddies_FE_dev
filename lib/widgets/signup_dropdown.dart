@@ -5,18 +5,27 @@ class HoursDropdown extends StatefulWidget {
   final Function(String) onChanged;
   final String hintText;
   final double maxHeight;
+  String? selectedHour;
 
-  const HoursDropdown(
-      {super.key,
-      required this.onChanged,
-      this.hintText = "Select time",
-      this.maxHeight = 200});
+  HoursDropdown({
+    super.key,
+    required this.onChanged,
+    this.hintText = "Select time",
+    this.maxHeight = 200,
+    this.selectedHour,
+  });
 
   @override
   _HoursDropdownState createState() => _HoursDropdownState();
 }
 
 class _HoursDropdownState extends State<HoursDropdown> {
+  @override
+  void initState() {
+    super.initState();
+    _selectedhours = widget.selectedHour;
+  }
+
   final _hours = [
     '00:00',
     '01:00',
@@ -75,6 +84,7 @@ class _HoursDropdownState extends State<HoursDropdown> {
               onChanged: (value) {
                 setState(() {
                   _selectedhours = value!;
+                  widget.selectedHour = value;
                 });
                 widget.onChanged(value!);
               },
