@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/signup_getuserinfo.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/custom_outlined_button.dart';
@@ -31,13 +32,7 @@ class SignUp extends StatelessWidget {
                     width: 300,
                     text: '이메일로 회원가입',
                     textStyle: const TextStyle(color: Colors.white),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GetUserInfoScrceen()),
-                      );
-                    },
+                    onPressed: () => Get.to(const GetUserInfoScrceen()),
                   ),
                   // 로그인 화면으로 돌아가는 텍스트 버튼
                   Align(

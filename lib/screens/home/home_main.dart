@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_search.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -55,14 +56,7 @@ class _HomeMainState extends State<HomeMain> {
           ),
           IconButton(
             icon: const Icon(Icons.search, color: Colors.black), // 검색 아이콘
-            onPressed: () {
-              // Serach page 이동
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeSearch(),
-                  ));
-            },
+            onPressed: () => Get.toNamed('/search'),
           ),
           const SizedBox(width: 16) // 오른쪽 패딩 추가
         ],
@@ -116,12 +110,12 @@ class _HomeMainState extends State<HomeMain> {
         itemBuilder: (context, index) {
           final group = groupData[index];
           return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const HomeGroupDetail()));
-            },
+            onTap:
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => const HomeGroupDetail()));
+                () => Get.toNamed('/home_group_detail'),
             child: Container(
               margin: const EdgeInsets.only(right: 16),
               width: 120, // 각 아이템의 너비 조절
