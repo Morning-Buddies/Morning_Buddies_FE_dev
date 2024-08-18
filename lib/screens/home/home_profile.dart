@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/home/my_group_detail.dart';
+=======
+import 'package:get/get.dart';
+import 'package:morning_buddies/models/group_controller.dart';
+>>>>>>> 246c062 (FEAT: My Groups GetX적용 및 UI 추가)
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -15,6 +20,7 @@ class HomeProfile extends StatefulWidget {
 }
 
 class _HomeProfileState extends State<HomeProfile> {
+<<<<<<< HEAD
   final List<GroupStatus> _groups = [
     GroupStatus(
       name: "Group 1",
@@ -36,6 +42,12 @@ class _HomeProfileState extends State<HomeProfile> {
 
   @override
   Widget build(BuildContext context) {
+=======
+  @override
+  Widget build(BuildContext context) {
+    // final GroupStatusController groupStatusController = Get.find();
+
+>>>>>>> 246c062 (FEAT: My Groups GetX적용 및 UI 추가)
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
