@@ -12,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
+import 'package:morning_buddies/service/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
 
@@ -35,8 +36,9 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       title: 'Morning Buddies',
-      initialRoute: '/signin',
+      initialRoute: '/auth_gate',
       getPages: [
+        GetPage(name: '/auth_gate', page: () => const AuthGate()),
         GetPage(name: '/signin', page: () => const SignIn()),
         GetPage(name: '/main', page: () => const HomeBottomNav()),
         GetPage(name: '/home_main', page: () => const HomeMain()),

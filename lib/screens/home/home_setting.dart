@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:morning_buddies/screens/home/password_reset.dart';
+import 'package:morning_buddies/service/auth_service.dart';
 
 class HomeSetting extends StatefulWidget {
   const HomeSetting({super.key});
 
   @override
   State<HomeSetting> createState() => _HomeSettingState();
+}
+
+void logout() {
+  final auth = AuthService();
+  auth.signOut();
+  Get.toNamed('/auth_gate');
 }
 
 class _HomeSettingState extends State<HomeSetting> {
@@ -49,7 +57,9 @@ class _HomeSettingState extends State<HomeSetting> {
               child: ListTile(
                 title: const Text('Sign Out'),
                 trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {},
+                onTap: () {
+                  logout();
+                },
               ),
             ),
             const SizedBox(height: 2),
