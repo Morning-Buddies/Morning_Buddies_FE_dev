@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/my_group_detail', page: () => const MyGroupDetail()),
         GetPage(
             name: '/subscription_screen',
-            page: () => const SubscriptionScreen())
+            page: () => const SubscriptionScreen()),
       ],
 >>>>>>> 246c062 (FEAT: My Groups GetX적용 및 UI 추가)
     );

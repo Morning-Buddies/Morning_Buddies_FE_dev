@@ -26,12 +26,10 @@ class GroupStatusController extends GetxController {
 
   @override
   void onInit() {
-    // Initialize the group list with some data
     groups.addAll([
       GroupStatus(name: "Group 1", status: "Missed", time: "6:30 AM"),
       GroupStatus(name: "Group 2", status: "Dismissed", time: "7:00 AM"),
       GroupStatus(name: "Group 3", status: "Dismissed", time: "8:00 AM"),
-      // Add more groups here if needed
     ]);
     super.onInit();
   }
