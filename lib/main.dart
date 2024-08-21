@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     Get.put(GroupStatusController()); // Group Mock Data
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/my_group_detail', page: () => const MyGroupDetail()),
         GetPage(
             name: '/subscription_screen',
-            page: () => const SubscriptionScreen())
+            page: () => const SubscriptionScreen()),
       ],
     );
   }

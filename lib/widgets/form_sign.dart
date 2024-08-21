@@ -138,18 +138,27 @@ class _SignupFormState extends State<SignUpForm> {
   // 인증번호 확인시 회원가입 로직
   Future<void> _signInWithPhoneNumber() async {
     try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: _smsController.text,
       );
-
-      await _auth.signInWithCredential(credential);
+      // await _auth.signInWithCredential(phoneCredential);
       Fluttertoast.showToast(msg: 'Phone number verified successfully!');
 
-      await _submitFormData();
+      UserCredential emailUserCredential =
+          await _auth.createUserWithEmailAndPassword(
+              email: _controllers['e-mail(id)']!.text,
+              password: _controllers['password']!.text);
+
+      await emailUserCredential.user?.linkWithCredential(phoneCredential);
+      Fluttertoast.showToast(
+          msg: 'Successfully linked email and phone number!');
+
+      // 회원정보 POST
+      // await _submitFormData();
 
       if (mounted) {
-        await Get.to(const HomeBottomNav());
+        await Get.to(() => const HomeBottomNav());
       }
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? 'Verification failed');

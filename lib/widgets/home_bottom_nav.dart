@@ -17,7 +17,7 @@ class HomeBottomNav extends StatefulWidget {
 class _HomeBottomNavState extends State<HomeBottomNav> {
   final TimeService _timeService = TimeService();
   // TargetTime
-  String targetTime = "19:31";
+  String targetTime = "23:59";
 
   // String to DateTime
   DateTime convertToDateTime(String targetTime) {
