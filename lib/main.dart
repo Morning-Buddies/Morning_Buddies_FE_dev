@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
 =======
         GetPage(name: '/main', page: () => const HomeBottomNav()),
         GetPage(name: '/home_main', page: () => const HomeMain()),
-        GetPage(name: '/chat', page: () => const HomeChat()),
+        GetPage(name: '/chat', page: () => HomeChat()),
         GetPage(name: '/profile', page: () => const HomeProfile()),
         GetPage(name: '/search', page: () => const HomeSearch()),
         GetPage(name: '/setting', page: () => const HomeSetting()),

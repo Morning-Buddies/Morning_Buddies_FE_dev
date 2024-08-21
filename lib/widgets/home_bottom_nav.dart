@@ -35,7 +35,7 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
   final List<Widget> _pages = [
     const HomeMain(),
     const HomeCreate(),
-    const HomeChat(),
+    HomeChat(),
     const HomeProfile(),
   ];
 
