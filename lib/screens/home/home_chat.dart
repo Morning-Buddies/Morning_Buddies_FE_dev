@@ -58,7 +58,7 @@ class _HomeChatState extends State<HomeChat> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("Group Name"),
+        title: const Text("Group Name"),
       ),
       body: Column(
         children: [
@@ -85,11 +85,11 @@ class _HomeChatState extends State<HomeChat> {
                           : MainAxisAlignment.start,
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 10,
                               horizontal:
                                   16), // 컨테이너 내부의 위젯들에 대해 수직 및 수평 방향으로 패딩을 적용
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 4,
                               horizontal:
                                   8), // 컨테이너 외부의 공간에 대해 수직 및 수평 방향으로 마진을 설정
@@ -99,13 +99,13 @@ class _HomeChatState extends State<HomeChat> {
                                 : Colors.grey[
                                     500], // 메시지가 현재 사용자에 의해 보내진 경우 밝은 회색, 아닐 경우 더 어두운 회색
                             borderRadius: isMe
-                                ? BorderRadius.only(
+                                ? const BorderRadius.only(
                                     topLeft: Radius.circular(
                                         14), // 현재 사용자의 메시지일 경우, 오른쪽 아래 모서리를 제외한 모든 모서리를 둥글게 처리
                                     topRight: Radius.circular(14),
                                     bottomLeft: Radius.circular(14),
                                   )
-                                : BorderRadius.only(
+                                : const BorderRadius.only(
                                     topLeft: Radius.circular(
                                         14), // 다른 사용자의 메시지일 경우, 오른쪽 위 모서리를 제외한 모든 모서리를 둥글게 처리
                                     topRight: Radius.circular(14),
@@ -115,7 +115,8 @@ class _HomeChatState extends State<HomeChat> {
                           child: Text(
                             chatDocs[index]
                                 ['text'], // Firestore에서 가져온 메시지 텍스트를 표시
-                            style: TextStyle(fontSize: 16), // 메시지 텍스트의 스타일
+                            style:
+                                const TextStyle(fontSize: 16), // 메시지 텍스트의 스타일
                           ),
                         ),
                       ],
@@ -132,13 +133,13 @@ class _HomeChatState extends State<HomeChat> {
                 Expanded(
                   child: TextField(
                     controller: _controller, // 텍스트 입력을 위한 TextEditingController
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: 'Send a message...'), // 입력 필드에 레이블 텍스트를 표시
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send), // 'send' 아이콘을 가진 버튼을 생성
+                  icon: const Icon(Icons.send), // 'send' 아이콘을 가진 버튼을 생성
                   onPressed: _sendMessage, // 아이콘 버튼을 누르면 _sendMessage 함수가 호출
                 ),
               ],
