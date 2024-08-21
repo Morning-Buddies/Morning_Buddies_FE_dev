@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:morning_buddies/models/group_controller.dart';
 import 'package:morning_buddies/screens/home/home_chat.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
@@ -10,11 +9,9 @@ import 'package:morning_buddies/screens/home/home_search.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/home/my_group_detail.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:morning_buddies/screens/game/game_jigsaw_puzzle.dart';
-import 'package:morning_buddies/service/time_service.dart';
+import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
 
@@ -24,13 +21,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     Get.put(GroupStatusController()); // Group Mock Data
@@ -49,8 +47,10 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: '/home_group_detail', page: () => const HomeGroupDetail()),
         GetPage(name: '/my_group_detail', page: () => const MyGroupDetail()),
+        GetPage(
+            name: '/subscription_screen',
+            page: () => const SubscriptionScreen()),
       ],
-
     );
   }
 }

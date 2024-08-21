@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/state_manager.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/home_chat.dart';
 import 'package:morning_buddies/screens/home/home_create.dart';
@@ -18,7 +17,7 @@ class HomeBottomNav extends StatefulWidget {
 class _HomeBottomNavState extends State<HomeBottomNav> {
   final TimeService _timeService = TimeService();
   // TargetTime
-  String targetTime = "19:31";
+  String targetTime = "23:59";
 
   // String to DateTime
   DateTime convertToDateTime(String targetTime) {
@@ -48,7 +47,6 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
@@ -57,7 +55,6 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _timeService.dispose();
     super.dispose();
   }

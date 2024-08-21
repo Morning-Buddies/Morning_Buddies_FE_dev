@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:morning_buddies/models/group_controller.dart';
-import 'package:morning_buddies/screens/home/my_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -17,28 +15,9 @@ class HomeProfile extends StatefulWidget {
 }
 
 class _HomeProfileState extends State<HomeProfile> {
-  // final List<GroupStatus> _groups = [
-  //   GroupStatus(
-  //     name: "Group 1",
-  //     status: "Missed",
-  //     time: "6:30 AM",
-  //   ),
-  //   GroupStatus(
-  //     name: "Group 2",
-  //     status: "Dismissed",
-  //     time: "7:00 AM",
-  //   ),
-  //   GroupStatus(
-  //     name: "Group 3",
-  //     status: "Dismissed",
-  //     time: "8:00 AM",
-  //   ),
-  //   // 더 많은 그룹 추가
-  // ];
-
   @override
   Widget build(BuildContext context) {
-    final GroupStatusController groupStatusController = Get.find();
+    // final GroupStatusController groupStatusController = Get.find();
 
     return Scaffold(
       backgroundColor: Colors.white,
