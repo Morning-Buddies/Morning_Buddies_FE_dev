@@ -1,66 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/utils/design_palette.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
-  final bool isCurrentUSer;
+  final String senderName;
   final String time;
-  final String receiverName;
+  final bool isCurrentUser;
 
   const ChatBubble({
-    super.key,
+    Key? key,
     required this.message,
-    required this.isCurrentUSer,
+    required this.senderName,
     required this.time,
-    required this.receiverName,
-  });
+    required this.isCurrentUser,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final Radius messageRadius = Radius.circular(15);
+
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      margin: EdgeInsets.symmetric(vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
+        crossAxisAlignment:
+            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const CircleAvatar(
-                backgroundColor: Colors.grey,
-                radius: 18,
-                child: Icon(Icons.person), // 추후 개인별 이미지로 변경 예정
+          if (!isCurrentUser)
+            Text(
+              senderName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          isCurrentUSer ? "Me" : receiverName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          time,
-                          style: const TextStyle(color: ColorStyles.btnGrey),
-                        )
-                      ],
-                    ),
-                    Text(
-                      message,
-                      softWrap: true,
-                      maxLines: null,
-                    ),
-                  ],
-                ),
+            ),
+          SizedBox(height: 3),
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isCurrentUser ? Colors.blue[200] : Colors.grey[300],
+              borderRadius: BorderRadius.only(
+                topLeft: messageRadius,
+                topRight: messageRadius,
+                bottomLeft: isCurrentUser ? messageRadius : Radius.zero,
+                bottomRight: isCurrentUser ? Radius.zero : messageRadius,
               ),
-            ],
+            ),
+            child: Text(
+              message,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          SizedBox(height: 2),
+          Text(
+            time,
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),

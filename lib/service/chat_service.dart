@@ -1,57 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:morning_buddies/models/chat_room.dart';
 import 'package:morning_buddies/models/message.dart';
 
 class ChatService {
-  // Firestore의 Instance 가져오기
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // User Stream 가져오기
-  Stream<List<Map<String, dynamic>>> getUsersStream() {
-    return _firestore.collection("Users").snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final user = doc.data();
-        return user;
-      }).toList();
-    });
+  // Creates a new chat room
+  Future<void> createChatRoom(String name, List<String> memberIDs) async {
+    final String chatRoomID = _firestore.collection("chat_rooms").doc().id;
+    DocumentSnapshot chatRoomSnapshot =
+        await _firestore.collection("chat_rooms").doc(chatRoomID).get();
+
+    ChatRoom chatRoom = ChatRoom(
+      id: chatRoomID,
+      name: name,
+      memberIDs: memberIDs,
+      createdAt: Timestamp.now(),
+    );
+
+    await _firestore
+        .collection("chat_rooms")
+        .doc(chatRoomID)
+        .set(chatRoom.toMap());
   }
 
-  // 메시지 전송
-  Future<void> sendMessage(String receiverID, message) async {
-    // 현재 접속중인 사용자 정보
+  // Sends a message to the specified chat room
+  Future<void> sendMessage({
+    required String chatRoomID,
+    required String senderID,
+    required String message,
+  }) async {
     final String currentUserID = _auth.currentUser!.uid;
     final String currentUserEmail = _auth.currentUser!.email!;
 
-    final Timestamp timestamp = Timestamp.now();
-    // 새로운 메시지
-
     Message newMessage = Message(
-        senderID: currentUserID,
-        senderEmail: currentUserEmail,
-        receiverID: receiverID,
-        message: message,
-        timestamp: timestamp);
+      senderID: currentUserID,
+      senderEmail: currentUserEmail,
+      message: message,
+      timestamp: Timestamp.now(),
+      chatRoomID: chatRoomID,
+    );
 
-    // 두 유저간 채팅 방 아이디
-    List<String> ids = [currentUserID, receiverID];
-    ids.sort(); // 정렬 통해 2명에게 같은 아이디 발급
-    String chatRoomID = ids.join('_');
-
-    // 데베에 메시지 추가
     await _firestore
         .collection("chat_rooms")
         .doc(chatRoomID)
         .collection("messages")
         .add(newMessage.toMap());
   }
-  // 메시지 수신
 
-  Stream<QuerySnapshot> getMessages(String userID, otherUSerID) {
-    List<String> ids = [userID, otherUSerID];
-    ids.sort();
-    String chatRoomID = ids.join('_');
-
+  // Fetches real-time messages for a chat room
+  Stream<QuerySnapshot> getMessagesStream(String chatRoomID) {
     return _firestore
         .collection("chat_rooms")
         .doc(chatRoomID)
@@ -60,19 +60,61 @@ class ChatService {
         .snapshots();
   }
 
-  Future<Map<String, dynamic>?> getUserInfo(String userID) async {
+  // Fetches the chat rooms that the current user is a member of
+  Stream<List<ChatRoom>> getUserChatRooms(String userID) {
+    return _firestore
+        .collection("chat_rooms")
+        .where("memberIDs", arrayContains: userID)
+        .snapshots()
+        .map(
+      (snapshot) {
+        return snapshot.docs.map((doc) {
+          return ChatRoom.fromMap(doc.data());
+        }).toList();
+      },
+    );
+  }
+
+  // Fetches user names based on user IDs
+  Future<Map<String, String>> getUserNames(List<String> userIDs) async {
+    Map<String, String> userNames = {};
     try {
-      DocumentSnapshot doc =
-          await _firestore.collection("Users").doc(userID).get();
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>;
-      } else {
-        print("User not found");
-        return null;
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .where(FieldPath.documentId, whereIn: userIDs)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        userNames[doc.id] = doc['displayName'] ?? 'Unknown';
       }
     } catch (e) {
-      print("Error fetching user data: $e");
-      return null;
+      print('Error fetching user names: $e');
+    }
+    return userNames;
+  }
+
+  Future<void> createChatRoomForGroup(
+      String groupID, String groupName, List<String> memberIDs) async {
+    final String chatRoomID = groupID; // Using the group ID as the chat room ID
+
+    DocumentSnapshot chatRoomSnapshot =
+        await _firestore.collection("chat_rooms").doc(chatRoomID).get();
+
+    if (!chatRoomSnapshot.exists) {
+      await _firestore.collection("chat_rooms").doc(chatRoomID).set({
+        'id': chatRoomID,
+        'name': groupName,
+        'memberIDs': memberIDs,
+        'createdAt': Timestamp.now(),
+      });
+
+      print("Chat room created for group '$groupName'");
+    } else {
+      print("Chat room already exists for group '$groupName'");
+      // Optionally, you can update the member list if new members have joined
+      await _firestore.collection("chat_rooms").doc(chatRoomID).update({
+        'memberIDs': FieldValue.arrayUnion(memberIDs),
+      });
     }
   }
 }

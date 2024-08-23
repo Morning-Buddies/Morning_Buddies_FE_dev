@@ -1,187 +1,199 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:morning_buddies/screens/home/chat/chat_bubble.dart';
-import 'package:morning_buddies/screens/home/home_chat.dart';
 import 'package:morning_buddies/service/auth_service.dart';
 import 'package:morning_buddies/service/chat_service.dart';
-import 'package:morning_buddies/utils/design_palette.dart';
+
+import 'chat_bubble.dart';
 
 class ChatPage extends StatefulWidget {
-  final String receiverEmail;
-  final String receiverID;
-  final String receiverName;
+  final String chatRoomID;
+  final String chatRoomName;
+  final List<String> memberIDs;
 
   const ChatPage({
-    super.key,
-    required this.receiverEmail,
-    required this.receiverID,
-    required this.receiverName,
-  });
+    Key? key,
+    required this.chatRoomID,
+    required this.chatRoomName,
+    required this.memberIDs,
+  }) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
-
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
+  final ScrollController _scrollController = ScrollController();
 
-  FocusNode myFocusNode = FocusNode();
+  Map<String, String> _memberNames = {};
+  User? _currentUser;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    myFocusNode.addListener(() {
-      if (myFocusNode.hasFocus) {
-        Future.delayed(
-          const Duration(milliseconds: 500),
-          () => scrollDown(),
-        );
-      }
+    _currentUser = _authService.getCurrentUser();
+    _fetchMemberNames();
+  }
+
+  Future<void> _fetchMemberNames() async {
+    Map<String, String> names =
+        await _chatService.getUserNames(widget.memberIDs);
+    setState(() {
+      _memberNames = names;
     });
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    myFocusNode.dispose();
-    _messageController.dispose();
-    super.dispose();
-  }
-
-  final ScrollController _scrollController = ScrollController();
-  void scrollDown() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(seconds: 1),
-      curve: Curves.fastOutSlowIn,
-    );
-  }
-
-  void sendMessage() async {
-    if (_messageController.text.isNotEmpty) {
-      await _chatService.sendMessage(
-          widget.receiverID, _messageController.text);
-    }
-    _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(widget.receiverName),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.to(HomeChat()),
-        ),
+        title: Text(widget.chatRoomName),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(5),
-            child: IconButton(
-              icon: const Icon(Icons.call_outlined),
-              onPressed: () {},
-            ),
-          )
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: _showChatRoomInfo,
+          ),
         ],
       ),
       body: Column(
         children: [
-          const Divider(),
-          Expanded(
-            child: _buildMessageList(),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildUserInput(),
-          ),
+          Expanded(child: _buildMessageList()),
+          _buildMessageInput(),
         ],
       ),
     );
   }
 
   Widget _buildMessageList() {
-    String senderID = _authService.getCurrentUser()!.uid;
-    return StreamBuilder(
-        stream: _chatService.getMessages(widget.receiverID, senderID),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Error");
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading..");
-          }
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              controller: _scrollController,
-              children: snapshot.data!.docs
-                  .map((doc) => _buildMessageItem(doc))
-                  .toList(),
-            ),
-          );
-        });
+    return StreamBuilder<QuerySnapshot>(
+      stream: _chatService.getMessagesStream(widget.chatRoomID),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error loading messages'));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+              child: Text('No messages yet. Start the conversation!'));
+        }
+        return ListView(
+          controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          children:
+              snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
+        );
+      },
+    );
   }
 
   Widget _buildMessageItem(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
+    final bool isCurrentUser = data['senderID'] == _currentUser?.uid;
+    final String senderName = _memberNames[data['senderID']].toString();
+    final DateTime timestamp = (data['timestamp'] as Timestamp).toDate();
+    final String formattedTime = DateFormat('hh:mm a').format(timestamp);
 
-    bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
-    var alignment =
-        isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
-
-    Timestamp timestamp = data['timestamp'];
-    DateTime dateTime = timestamp.toDate();
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
-
-    return Container(
-        alignment: alignment,
-        child: Column(
-          children: [
-            ChatBubble(
-              message: data["message"],
-              isCurrentUSer: isCurrentUser,
-              time: formattedTime,
-              receiverName: widget.receiverName,
-            )
-          ],
-        ));
+    return Align(
+      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: ChatBubble(
+        message: data['message'],
+        senderName: senderName,
+        time: formattedTime,
+        isCurrentUser: isCurrentUser,
+      ),
+    );
   }
 
-  Widget _buildUserInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            focusNode: myFocusNode,
-            controller: _messageController,
-            onChanged: (text) {
-              // 💡 일단 100자 제한 합니다.
-              if (text.characters.length > 100) {
-                _messageController.text = text.characters.take(100).toString();
-              }
-            },
-            decoration: const InputDecoration(
-              hintText: "Type a Message",
+  Widget _buildMessageInput() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      color: Colors.grey[200],
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              textInputAction: TextInputAction.send,
+              decoration: InputDecoration(
+                hintText: 'Type a message...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              onSubmitted: (_) => _sendMessage(),
             ),
-            onSubmitted: (value) {
-              sendMessage();
-            },
           ),
-        ),
-        IconButton(
-          onPressed: sendMessage,
-          icon: const Icon(Icons.arrow_upward),
-        )
-      ],
+          SizedBox(width: 8),
+          FloatingActionButton(
+            onPressed: _sendMessage,
+            mini: true,
+            child: Icon(Icons.send),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendMessage() async {
+    final String messageText = _messageController.text.trim();
+    if (messageText.isEmpty) return;
+
+    _messageController.clear();
+
+    await _chatService.sendMessage(
+      chatRoomID: widget.chatRoomID,
+      senderID: _currentUser!.uid,
+      message: messageText,
+    );
+
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _showChatRoomInfo() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.chatRoomName,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Members:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 5),
+              ..._memberNames.entries.map((entry) => ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(entry.value),
+                  )),
+            ],
+          ),
+        );
+      },
     );
   }
 }

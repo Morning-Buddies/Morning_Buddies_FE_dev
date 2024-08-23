@@ -403,11 +403,11 @@ class _GroupStatusCard extends StatelessWidget {
                         group.name,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                        group.status,
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.grey),
-                      ),
+                      // Text(
+                      //   group.status,
+                      //   style:
+                      //       const TextStyle(fontSize: 10, color: Colors.grey),
+                      // ),
                     ],
                   ),
                 ],
