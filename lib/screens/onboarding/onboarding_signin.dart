@@ -3,8 +3,8 @@ import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signup.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/custom_outlined_button.dart';
-import 'package:morning_buddies/widgets/form_login.dart';
+import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/form/form_login.dart';
 
 class SignIn extends StatelessWidget {
   const SignIn({super.key});

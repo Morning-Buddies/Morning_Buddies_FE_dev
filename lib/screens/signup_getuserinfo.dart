@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/form_sign.dart';
+import 'package:morning_buddies/widgets/form/form_sign.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class GetUserInfoScrceen extends StatefulWidget {

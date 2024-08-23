@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
-import 'package:morning_buddies/widgets/custom_form_field.dart';
-import 'package:morning_buddies/widgets/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/form/custom_form_field.dart';
+import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 
 class PasswordReset extends StatefulWidget {
   const PasswordReset({super.key});

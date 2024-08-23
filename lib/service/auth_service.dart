@@ -7,17 +7,18 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // 현재 사용자 정보 가져오기
-
   User? getCurrentUser() {
     return _auth.currentUser;
   }
 
+  // 이메일 & 패스워드로 로그인
   Future<UserCredential> signInWithEmailPassword(String email, password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -31,9 +32,12 @@ class AuthService {
     }
   }
 
+  // 로그아웃
   Future<void> signOut() async {
     return await _auth.signOut();
   }
+
+  // 전화 번호 인증
 
   Future<void> verifyPhoneNumber(
     String phoneNumber,
@@ -59,8 +63,9 @@ class AuthService {
     }
   }
 
+//  전화번호 회원가입 & 이메일 정보와 연결하여 DB로 이동
   Future<void> signInWithPhoneNumber(String verificationId, String smsCode,
-      String email, String password) async {
+      String email, String password, String lastName, String firstName) async {
     try {
       PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
         verificationId: verificationId,
@@ -83,6 +88,8 @@ class AuthService {
           .set({
         'uid': emailUserCredential.user!.uid,
         'email': email,
+        "lastname": lastName,
+        "firstname": firstName
       });
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? 'Verification failed');

@@ -52,11 +52,12 @@ class HomeChat extends StatelessWidget {
       Map<String, dynamic> userData, BuildContext context) {
     if (userData["email"] != _authService.getCurrentUser()!.email) {
       return UserTile(
-        text: userData["email"],
+        text: "${userData["lastname"]} ${userData["firstname"]}",
         onTap: () {
           Get.to(
             () => ChatPage(
               receiverEmail: userData["email"],
+              receiverName: "${userData["lastname"]} ${userData["firstname"]}",
               receiverID: userData["uid"],
             ),
           );

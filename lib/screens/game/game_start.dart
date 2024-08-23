@@ -34,7 +34,7 @@ class _GameStartState extends State<GameStart> {
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  minimumSize: Size(369, 48),
+                  minimumSize: const Size(369, 48),
                   foregroundColor: Colors.white,
                   backgroundColor: ColorStyles.secondaryOrange),
               onPressed: () {

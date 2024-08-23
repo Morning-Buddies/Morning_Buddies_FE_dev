@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/section_with_btn.dart';
+import 'package:morning_buddies/widgets/button/section_with_btn.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({super.key});

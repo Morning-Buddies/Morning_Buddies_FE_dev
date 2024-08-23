@@ -5,10 +5,10 @@ import 'package:get/route_manager.dart';
 import 'package:morning_buddies/service/auth_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
-import 'package:morning_buddies/widgets/custom_form_field.dart';
-import 'package:morning_buddies/widgets/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/form/custom_form_field.dart';
+import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
-import 'package:morning_buddies/widgets/signup_dropdown.dart';
+import 'package:morning_buddies/widgets/dropdown/signup_dropdown.dart';
 import 'dart:async'; // Import for Timer
 import 'package:http/http.dart' as http;
 
@@ -123,11 +123,12 @@ class _SignupFormState extends State<SignUpForm> {
   // 인증번호 확인시 회원가입 로직
   Future<void> _signInWithPhoneNumber() async {
     await _authService.signInWithPhoneNumber(
-      _verificationId,
-      _smsController.text,
-      _controllers['e-mail(id)']!.text,
-      _controllers['password']!.text,
-    );
+        _verificationId,
+        _smsController.text,
+        _controllers['e-mail(id)']!.text,
+        _controllers['password']!.text,
+        _controllers['last name']!.text,
+        _controllers['first name']!.text);
 
     if (mounted) {
       await Get.to(() => const HomeBottomNav());

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/custom_form_field.dart';
-import 'package:morning_buddies/widgets/number_dropdown.dart';
+import 'package:morning_buddies/widgets/form/custom_form_field.dart';
+import 'package:morning_buddies/widgets/dropdown/number_dropdown.dart';
 
 class HomeCreate extends StatefulWidget {
   const HomeCreate({super.key});

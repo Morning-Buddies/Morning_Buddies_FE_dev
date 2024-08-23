@@ -22,6 +22,7 @@ class ChatService {
     // 현재 접속중인 사용자 정보
     final String currentUserID = _auth.currentUser!.uid;
     final String currentUserEmail = _auth.currentUser!.email!;
+
     final Timestamp timestamp = Timestamp.now();
     // 새로운 메시지
 
@@ -57,5 +58,21 @@ class ChatService {
         .collection("messages")
         .orderBy("timestamp", descending: false)
         .snapshots();
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo(String userID) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection("Users").doc(userID).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        print("User not found");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      return null;
+    }
   }
 }

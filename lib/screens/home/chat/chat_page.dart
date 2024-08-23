@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:morning_buddies/screens/home/chat/chat_bubble.dart';
 import 'package:morning_buddies/screens/home/home_chat.dart';
 import 'package:morning_buddies/service/auth_service.dart';
@@ -10,11 +11,13 @@ import 'package:morning_buddies/utils/design_palette.dart';
 class ChatPage extends StatefulWidget {
   final String receiverEmail;
   final String receiverID;
+  final String receiverName;
 
-  ChatPage({
+  const ChatPage({
     super.key,
     required this.receiverEmail,
     required this.receiverID,
+    required this.receiverName,
   });
 
   @override
@@ -73,15 +76,25 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: ColorStyles.orange,
-        title: Text(widget.receiverEmail),
+        backgroundColor: Colors.white,
+        title: Text(widget.receiverName),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.to(HomeChat()),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: IconButton(
+              icon: const Icon(Icons.call_outlined),
+              onPressed: () {},
+            ),
+          )
+        ],
       ),
       body: Column(
         children: [
+          const Divider(),
           Expanded(
             child: _buildMessageList(),
           ),
@@ -122,9 +135,12 @@ class _ChatPageState extends State<ChatPage> {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
     bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
-
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+
+    Timestamp timestamp = data['timestamp'];
+    DateTime dateTime = timestamp.toDate();
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
 
     return Container(
         alignment: alignment,
@@ -133,6 +149,8 @@ class _ChatPageState extends State<ChatPage> {
             ChatBubble(
               message: data["message"],
               isCurrentUSer: isCurrentUser,
+              time: formattedTime,
+              receiverName: widget.receiverName,
             )
           ],
         ));
@@ -145,6 +163,12 @@ class _ChatPageState extends State<ChatPage> {
           child: TextField(
             focusNode: myFocusNode,
             controller: _messageController,
+            onChanged: (text) {
+              // 💡 일단 100자 제한 합니다.
+              if (text.characters.length > 100) {
+                _messageController.text = text.characters.take(100).toString();
+              }
+            },
             decoration: const InputDecoration(
               hintText: "Type a Message",
             ),
