@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/route_manager.dart';
+import 'package:morning_buddies/service/auth_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
-import 'package:morning_buddies/widgets/custom_form_field.dart';
-import 'package:morning_buddies/widgets/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/form/custom_form_field.dart';
+import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
-import 'package:morning_buddies/widgets/signup_dropdown.dart';
+import 'package:morning_buddies/widgets/dropdown/signup_dropdown.dart';
 import 'dart:async'; // Import for Timer
 import 'package:http/http.dart' as http;
 
@@ -93,75 +93,45 @@ class _SignupFormState extends State<SignUpForm> {
   // textcontroller가 생기면 해당하는 인풋 필드가 리스트에 삽입되는 원리
   final List<String> _visibleFields = ['E-mail(ID)'];
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthService _authService = AuthService();
+
   String _verificationId = '';
   bool _codeSent = false;
   final TextEditingController _smsController = TextEditingController();
 
   // SMS 인증번호 발송 및 확인
-  Future<void> _verifyPhoneNumber(String phoneNumber) async {
+  Future<void> _verifyPhoneNumber() async {
     String phoneNumber = _controllers['phone #']!.text;
-
-    // 01012345678 -> +821012345678로 변경
     String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     String formattedPhoneNumber = '+82$numericPhoneNumber';
 
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: formattedPhoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // await _auth.signInWithCredential(credential);
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          setState(() {
-            _verificationId = verificationId;
-            _codeSent = true;
-            _visibleFields.add('Verify #');
-            _startTimer();
-          });
-        },
-        // 코드 발송후 2분후 Code Time out
-        timeout: const Duration(seconds: 120),
-        codeAutoRetrievalTimeout: (String verificationId) {
-          Fluttertoast.showToast(msg: 'Time out, please try again');
-        },
-      );
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: 'Error verifying phone number: $e');
-    }
+    await _authService.verifyPhoneNumber(
+      formattedPhoneNumber,
+      (verificationId, resendToken) {
+        setState(() {
+          _verificationId = verificationId;
+          _codeSent = true;
+          _startTimer();
+        });
+      },
+      (verificationId) {
+        Fluttertoast.showToast(msg: 'Time out, please try again');
+      },
+    );
   }
 
   // 인증번호 확인시 회원가입 로직
   Future<void> _signInWithPhoneNumber() async {
-    try {
-      PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
-        smsCode: _smsController.text,
-      );
-      // await _auth.signInWithCredential(phoneCredential);
-      Fluttertoast.showToast(msg: 'Phone number verified successfully!');
+    await _authService.signInWithPhoneNumber(
+        _verificationId,
+        _smsController.text,
+        _controllers['e-mail(id)']!.text,
+        _controllers['password']!.text,
+        _controllers['last name']!.text,
+        _controllers['first name']!.text);
 
-      UserCredential emailUserCredential =
-          await _auth.createUserWithEmailAndPassword(
-              email: _controllers['e-mail(id)']!.text,
-              password: _controllers['password']!.text);
-
-      await emailUserCredential.user?.linkWithCredential(phoneCredential);
-      Fluttertoast.showToast(
-          msg: 'Successfully linked email and phone number!');
-
-      // 회원정보 POST
-      // await _submitFormData();
-
-      if (mounted) {
-        await Get.to(() => const HomeBottomNav());
-      }
-    } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(msg: e.message ?? 'Verification failed');
+    if (mounted) {
+      await Get.to(() => const HomeBottomNav());
     }
   }
 
@@ -290,8 +260,7 @@ class _SignupFormState extends State<SignUpForm> {
                                     인증번호 입력창이 보이지 않아서 FocusManager 활용했습니다.
                                   */
                                   FocusManager.instance.primaryFocus?.unfocus();
-                                  _verifyPhoneNumber(
-                                      _controllers['phone #']!.text);
+                                  _verifyPhoneNumber();
                                   setState(
                                       () => _visibleFields.add('Verify #'));
                                 },

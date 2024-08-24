@@ -1,26 +1,62 @@
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:morning_buddies/service/chat_service.dart';
+import 'package:morning_buddies/service/group_service.dart';
 
 class GroupStatus {
   final String name;
-  final String status;
   final String time;
+  final int memberCount;
+  final String groupID;
 
-  GroupStatus({required this.name, required this.status, required this.time});
+  GroupStatus({
+    required this.name,
+    required this.time,
+    required this.memberCount,
+    required this.groupID,
+  });
 }
 
 class GroupStatusController extends GetxController {
   var groups = <GroupStatus>[].obs;
-  void removeGroup(GroupStatus group) {
-    groups.remove(group);
-  }
+  final ChatService _chatService = ChatService(); // Injecting ChatService
+  final GroupService _groupService = GroupService(); // Injecting GroupService
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void onInit() {
-    groups.addAll([
-      GroupStatus(name: "Group 1", status: "Missed", time: "6:30 AM"),
-      GroupStatus(name: "Group 2", status: "Dismissed", time: "7:00 AM"),
-      GroupStatus(name: "Group 3", status: "Dismissed", time: "8:00 AM"),
-    ]);
     super.onInit();
+    fetchGroupsFromFirestore();
+  }
+
+  Future<void> fetchGroupsFromFirestore() async {
+    final String currentUserID = _auth.currentUser!.uid;
+
+    try {
+      QuerySnapshot groupSnapshot =
+          await _groupService.getGroupsForUser(currentUserID);
+      groups.clear(); // Clear the local list before populating
+
+      for (var doc in groupSnapshot.docs) {
+        Map<String, dynamic> groupData = doc.data() as Map<String, dynamic>;
+        List<dynamic> memberIDs = groupData['memberIDs'] ?? [];
+
+        if (memberIDs.contains(currentUserID)) {
+          groups.add(GroupStatus(
+            memberCount: groupData['memberIDs'].length,
+            name: groupData['name'],
+            time: "Time Placeholder",
+            groupID: doc.id,
+          ));
+        }
+      }
+    } catch (e) {
+      print('Error fetching groups: $e');
+    }
+  }
+
+  void removeGroup(GroupStatus group) {
+    groups.remove(group);
   }
 }

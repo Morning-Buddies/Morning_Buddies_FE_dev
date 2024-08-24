@@ -1,11 +1,15 @@
+// ignore_for_file: avoid_print
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/models/group_controller.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/custom_dropdown.dart';
-import 'package:morning_buddies/widgets/section_with_btn.dart';
+import 'package:morning_buddies/widgets/dropdown/custom_dropdown.dart';
+import 'package:morning_buddies/widgets/button/section_with_btn.dart';
 
 class HomeProfile extends StatefulWidget {
   const HomeProfile({super.key});
@@ -15,6 +19,47 @@ class HomeProfile extends StatefulWidget {
 }
 
 class _HomeProfileState extends State<HomeProfile> {
+  String _userName = "Loading..."; // Initial state with a placeholder
+
+  Future<void> getUserName() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    User? currentUser = auth.currentUser;
+
+    if (currentUser != null) {
+      String uid = currentUser.uid;
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+      if (userDoc.exists) {
+        String name = "${userDoc['lastname']} ${userDoc['firstname']}";
+        if (mounted) {
+          setState(() {
+            _userName = name; // Update the state with the fetched name
+          });
+        }
+        print("User Name: $name");
+      } else {
+        print("User document does not exist.");
+      }
+    } else {
+      print("No user is signed in.");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserName();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    getUserName();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // final GroupStatusController groupStatusController = Get.find();
@@ -27,7 +72,7 @@ class _HomeProfileState extends State<HomeProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const _ProfileCard(name: "John Doe"),
+              _ProfileCard(name: _userName),
               const SizedBox(height: 16.0),
               const _SectionTitle("Your Performance"),
               const PerformanceCard(),
@@ -329,6 +374,7 @@ class _GroupStatusCard extends StatelessWidget {
     return SizedBox(
       width: 176,
       child: Card(
+        color: Colors.white,
         elevation: 0,
         shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
@@ -357,11 +403,11 @@ class _GroupStatusCard extends StatelessWidget {
                         group.name,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                        group.status,
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.grey),
-                      ),
+                      // Text(
+                      //   group.status,
+                      //   style:
+                      //       const TextStyle(fontSize: 10, color: Colors.grey),
+                      // ),
                     ],
                   ),
                 ],

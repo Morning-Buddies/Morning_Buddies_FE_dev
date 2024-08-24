@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/models/group_controller.dart';
-import 'package:morning_buddies/screens/home/home_chat.dart';
+import 'package:morning_buddies/screens/home/chat/home_chat.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
 import 'package:morning_buddies/screens/home/home_profile.dart';
@@ -12,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
+import 'package:morning_buddies/service/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
 
@@ -35,12 +36,13 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       title: 'Morning Buddies',
-      initialRoute: '/signin',
+      initialRoute: '/auth_gate',
       getPages: [
+        GetPage(name: '/auth_gate', page: () => const AuthGate()),
         GetPage(name: '/signin', page: () => const SignIn()),
         GetPage(name: '/main', page: () => const HomeBottomNav()),
         GetPage(name: '/home_main', page: () => const HomeMain()),
-        GetPage(name: '/chat', page: () => const HomeChat()),
+        GetPage(name: '/chat', page: () => HomeChat()),
         GetPage(name: '/profile', page: () => const HomeProfile()),
         GetPage(name: '/search', page: () => const HomeSearch()),
         GetPage(name: '/setting', page: () => const HomeSetting()),

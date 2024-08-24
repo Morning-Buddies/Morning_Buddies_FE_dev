@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:morning_buddies/screens/signup_getuserinfo.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
-import 'package:morning_buddies/widgets/custom_outlined_button.dart';
+import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
