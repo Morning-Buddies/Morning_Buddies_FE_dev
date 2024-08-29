@@ -10,8 +10,6 @@ class ChatService {
   // Creates a new chat room
   Future<void> createChatRoom(String name, List<String> memberIDs) async {
     final String chatRoomID = _firestore.collection("chat_rooms").doc().id;
-    DocumentSnapshot chatRoomSnapshot =
-        await _firestore.collection("chat_rooms").doc(chatRoomID).get();
 
     ChatRoom chatRoom = ChatRoom(
       id: chatRoomID,
@@ -75,17 +73,25 @@ class ChatService {
     );
   }
 
-  // Fetches user names based on user IDs
   Future<Map<String, String>> getUserNames(List<String> userIDs) async {
+    if (userIDs.isEmpty) {
+      throw ArgumentError('userIDs list cannot be empty');
+    }
+
     Map<String, String> userNames = {};
     try {
+      // Firestore에서 userIDs 목록을 기반으로 사용자 데이터를 가져옴
       QuerySnapshot snapshot = await _firestore
-          .collection('users')
+          .collection('Users')
           .where(FieldPath.documentId, whereIn: userIDs)
           .get();
 
       for (var doc in snapshot.docs) {
-        userNames[doc.id] = doc['displayName'] ?? 'Unknown';
+        // 각 문서에서 firstname과 lastname을 가져옴
+        String firstName = doc['firstname'] ?? 'Unknown';
+        String lastName = doc['lastname'] ?? 'User';
+        String fullName = '$lastName $firstName'; // 전체 이름 결합
+        userNames[doc.id] = fullName; // ID를 키로 하여 이름을 맵에 저장
       }
     } catch (e) {
       print('Error fetching user names: $e');

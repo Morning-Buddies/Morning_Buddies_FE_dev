@@ -12,9 +12,7 @@ class GroupService {
         .get();
   }
 
-  // Method to create or get an existing group
   Future<String> createOrGetGroup(String groupName, String description) async {
-    // Normalize the group name to ensure consistent matching (e.g., trim and lowercase)
     String normalizedGroupName = groupName.trim().toLowerCase();
 
     // Check if a group with the same name already exists
@@ -43,11 +41,10 @@ class GroupService {
       });
 
       print("Group '$groupName' created with ID: $groupID");
-      return groupID; // Return the group ID for further operations
+      return groupID;
     }
   }
 
-  // Method to join a group
   Future<void> joinGroup(String groupID) async {
     final String currentUserID = _auth.currentUser!.uid;
 
@@ -58,7 +55,6 @@ class GroupService {
     print("User $currentUserID joined group $groupID");
   }
 
-  // Method to fetch a group by ID
   Future<DocumentSnapshot> getGroupByID(String groupID) async {
     return await _firestore.collection("groups").doc(groupID).get();
   }
