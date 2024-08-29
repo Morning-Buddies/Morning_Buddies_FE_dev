@@ -12,7 +12,7 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
+      child: SizedBox(
         height: 896,
         child: Scaffold(
           backgroundColor: ColorStyles.orange,

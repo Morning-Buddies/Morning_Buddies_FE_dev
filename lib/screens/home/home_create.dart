@@ -18,8 +18,10 @@ class _HomeCreateState extends State<HomeCreate> {
   XFile? _image;
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _groupNameController = TextEditingController();
-  final TextEditingController _wakeupController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  // TimePicker 관련 변수
+  TimeOfDay initialTime = TimeOfDay.now();
+  TimeOfDay? selectedTime;
 
   Future getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
@@ -37,7 +39,6 @@ class _HomeCreateState extends State<HomeCreate> {
     super.initState();
     // 텍스트 필드의 변경을 감지하여 _isFormFilled 값 업데이트
     _groupNameController.addListener(_updateFormFilledState);
-    _wakeupController.addListener(_updateFormFilledState);
     _descriptionController.addListener(_updateFormFilledState);
   }
 
@@ -45,7 +46,6 @@ class _HomeCreateState extends State<HomeCreate> {
   void dispose() {
     // 컨트롤러와 리스너 해제
     _groupNameController.dispose();
-    _wakeupController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -53,7 +53,6 @@ class _HomeCreateState extends State<HomeCreate> {
   void _updateFormFilledState() {
     setState(() {
       _isFormFilled = _groupNameController.text.isNotEmpty &&
-          _wakeupController.text.isNotEmpty &&
           _descriptionController.text.isNotEmpty;
     });
   }
@@ -192,10 +191,74 @@ class _HomeCreateState extends State<HomeCreate> {
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: CustomTextFormField(
-            controller: _wakeupController,
-            hintText: "Enter Wake-up Time",
-            emptyErrorText: "",
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(398, 56),
+              backgroundColor: Colors.white,
+              side: const BorderSide(color: ColorStyles.btnGrey),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              elevation: 0,
+            ),
+            onPressed: () async {
+              final TimeOfDay? timeOfDay = await showTimePicker(
+                context: context,
+                initialTime: initialTime,
+                builder: (BuildContext context, child) {
+                  return Theme(
+                    data: ThemeData.light().copyWith(
+                      colorScheme: const ColorScheme.light(
+                        primary: Colors.white,
+                        onPrimary: Colors.black,
+                        onSurface: Colors.black,
+                      ),
+                      timePickerTheme: TimePickerThemeData(
+                        dialHandColor: ColorStyles.secondaryOrange,
+                        hourMinuteTextColor: WidgetStateColor.resolveWith(
+                            (states) => states.contains(WidgetState.selected)
+                                ? Colors.white
+                                : Colors
+                                    .black), // Text color when selected and not selected
+                        hourMinuteColor: WidgetStateColor.resolveWith(
+                            (states) => states.contains(WidgetState.selected)
+                                ? ColorStyles.secondaryOrange
+                                : Colors.grey
+                                    .shade200), // Background color when selected and not selected
+                        dayPeriodColor: WidgetStateColor.resolveWith((states) =>
+                            states.contains(WidgetState.selected)
+                                ? ColorStyles.secondaryOrange
+                                : Colors.grey.shade200),
+                        dayPeriodTextColor: WidgetStateColor.resolveWith(
+                            (states) => states.contains(WidgetState.selected)
+                                ? Colors.black
+                                : Colors.black),
+                      ),
+                      textButtonTheme: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                          backgroundColor: ColorStyles.secondaryOrange,
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (timeOfDay != null) {
+                setState(() {
+                  selectedTime = timeOfDay;
+                });
+              }
+            },
+            child: Text(
+              selectedTime != null
+                  ? selectedTime!.format(context)
+                  : "Press Button and Choose Wake-Up Time",
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                color: Colors.grey,
+              ),
+            ),
           ),
         ),
         const Padding(

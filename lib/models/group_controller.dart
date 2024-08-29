@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:morning_buddies/service/chat_service.dart';
-import 'package:morning_buddies/service/group_service.dart';
 
 class GroupStatus {
   final String name;
@@ -23,16 +22,11 @@ class GroupStatus {
 class GroupStatusController extends GetxController {
   var groups = <GroupStatus>[].obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final ChatService _chatService = ChatService();
 
   @override
   void onInit() {
     super.onInit();
     fetchGroupsFromFirestore();
-  }
-
-  Future<Map<String, String>> _fetchMemberNames(List<String> memberIDs) async {
-    return await _chatService.getUserNames(memberIDs);
   }
 
   Future<void> fetchGroupsFromFirestore() async {
@@ -54,8 +48,6 @@ class GroupStatusController extends GetxController {
         // 명확히 List<String>으로 캐스팅
         List<String> memberIDs =
             List<String>.from(groupData['memberIDs'] ?? []);
-
-        Map<String, String> memberNames = await _fetchMemberNames(memberIDs);
 
         groups.add(GroupStatus(
           memberCount: memberIDs.length,
