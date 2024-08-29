@@ -11,11 +11,13 @@ class GroupListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Chat Rooms'),
+        backgroundColor: Colors.white,
+        title: const Text('Chat Rooms'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               _groupStatusController.fetchGroupsFromFirestore();
             },
@@ -24,7 +26,7 @@ class GroupListPage extends StatelessWidget {
       ),
       body: Obx(() {
         if (_groupStatusController.groups.isEmpty) {
-          return Center(child: Text('No groups found.'));
+          return const Center(child: Text('No groups found.'));
         }
         return ListView.builder(
           itemCount: _groupStatusController.groups.length,
@@ -39,7 +41,8 @@ class GroupListPage extends StatelessWidget {
                 Get.to(() => ChatPage(
                       chatRoomID: group.groupID,
                       chatRoomName: group.name,
-                      memberIDs: [], // You can pass memberIDs if needed
+                      memberIDs:
+                          group.memberIDs, // You can pass memberIDs if needed
                     ));
               },
             );

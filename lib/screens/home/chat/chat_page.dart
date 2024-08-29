@@ -54,7 +54,7 @@ class _ChatPageState extends State<ChatPage> {
         title: Text(widget.chatRoomName),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
             onPressed: _showChatRoomInfo,
           ),
         ],
@@ -73,18 +73,18 @@ class _ChatPageState extends State<ChatPage> {
       stream: _chatService.getMessagesStream(widget.chatRoomID),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error loading messages'));
+          return const Center(child: Text('Error loading messages'));
         }
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
+          return const Center(
               child: Text('No messages yet. Start the conversation!'));
         }
         return ListView(
           controller: _scrollController,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           children:
               snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
@@ -112,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       color: Colors.grey[200],
       child: Row(
         children: [
@@ -126,16 +126,16 @@ class _ChatPageState extends State<ChatPage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           FloatingActionButton(
             onPressed: _sendMessage,
             mini: true,
-            child: Icon(Icons.send),
+            child: const Icon(Icons.send),
           ),
         ],
       ),
@@ -161,7 +161,7 @@ class _ChatPageState extends State<ChatPage> {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
@@ -172,22 +172,23 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (context) {
         return Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 widget.chatRoomName,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Members:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               ..._memberNames.entries.map((entry) => ListTile(
-                    leading: Icon(Icons.person),
+                    leading: const Icon(Icons.person),
                     title: Text(entry.value),
                   )),
             ],
