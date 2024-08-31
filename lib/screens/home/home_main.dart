@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+import 'package:morning_buddies/models/groupinfo_controller.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/button/section_with_btn.dart';
 
@@ -11,25 +12,9 @@ class HomeMain extends StatefulWidget {
 }
 
 class _HomeMainState extends State<HomeMain> {
-  // Sample data (API 연동 후 실제 데이터로 대체)
-  final List<Map<String, dynamic>> hotGroups = [
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-  ];
+  final GroupinfoController _groupinfoController =
+      Get.put(GroupinfoController());
 
-  final List<Map<String, dynamic>> earlyWakers = [
-    // ... (API 연동 후 실제 데이터로 대체)
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-  ];
-  final List<Map<String, dynamic>> wakeOwls = [
-    // ... (API 연동 후 실제 데이터로 대체)
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-    {'title': '출근 전 헬스', 'time': '6:00', 'participants': '2/10'},
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +26,6 @@ class _HomeMainState extends State<HomeMain> {
           padding: const EdgeInsets.only(left: 24.0),
           child: Image.asset(
             'assets/images/main_logo.png',
-            // height: 40,
           ),
         ),
         actions: [
@@ -60,46 +44,52 @@ class _HomeMainState extends State<HomeMain> {
         ],
       ),
       body: Center(
-        child: ListView(
-          children: [
-            const SizedBox(height: 4),
-            Container(
-              width: 414,
-              height: 200,
-              decoration: const BoxDecoration(color: Colors.grey),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  SectionWithButton(
-                    title: "Hot Groups",
-                    buttonText: "more",
-                    onPressed: () {},
+        child: Obx(() {
+          if (_groupinfoController.getResponse.isEmpty) {
+            return const CircularProgressIndicator(); // 로딩 표시
+          } else {
+            return ListView(
+              children: [
+                const SizedBox(height: 4),
+                Container(
+                  width: 414,
+                  height: 200,
+                  decoration: const BoxDecoration(color: Colors.grey),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      SectionWithButton(
+                        title: "Hot Groups",
+                        buttonText: "more",
+                        onPressed: () {},
+                      ),
+                      _buildGroupList(_groupinfoController.getResponse),
+                      SectionWithButton(
+                        title: "Early Morning Wakers",
+                        buttonText: "more",
+                        onPressed: () {},
+                      ),
+                      _buildGroupList(_groupinfoController.getResponse),
+                      SectionWithButton(
+                        title: "Wake Like an Owl",
+                        buttonText: "more",
+                        onPressed: () {},
+                      ),
+                      _buildGroupList(_groupinfoController.getResponse),
+                    ],
                   ),
-                  _buildGroupList(hotGroups),
-                  SectionWithButton(
-                    title: "Early Moring Wakers",
-                    buttonText: "more",
-                    onPressed: () {},
-                  ),
-                  _buildGroupList(earlyWakers),
-                  SectionWithButton(
-                    title: "Wake Like an Owl",
-                    buttonText: "more",
-                    onPressed: () {},
-                  ),
-                  _buildGroupList(wakeOwls),
-                ],
-              ),
-            ),
-          ],
-        ),
+                ),
+              ],
+            );
+          }
+        }),
       ),
     );
   }
 
-  Widget _buildGroupList(List<Map<String, dynamic>> groupData) {
+  Widget _buildGroupList(List<GroupInfoStatus> groupData) {
     return SizedBox(
       height: 150, // 각 아이템의 높이에 맞춰 조절
       child: ListView.builder(
@@ -108,12 +98,7 @@ class _HomeMainState extends State<HomeMain> {
         itemBuilder: (context, index) {
           final group = groupData[index];
           return GestureDetector(
-            onTap:
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => const HomeGroupDetail()));
-                () => Get.toNamed('/home_group_detail'),
+            onTap: () => Get.toNamed('/home_group_detail', arguments: group),
             child: Container(
               margin: const EdgeInsets.only(right: 16),
               width: 120, // 각 아이템의 너비 조절
@@ -131,13 +116,14 @@ class _HomeMainState extends State<HomeMain> {
                         width: 120,
                         height: 80,
                         child: Image.asset("assets/images/example.png")),
-                    Text(group['title'],
+                    Text(group.group_name,
                         style:
-                            const TextStyle(fontSize: 12, color: Colors.black)),
-                    Text(group['time'],
+                            const TextStyle(fontSize: 8, color: Colors.black)),
+                    Text(group.wake_up_time,
                         style: const TextStyle(
-                            fontSize: 12, color: ColorStyles.orange)),
-                    Text(group['participants'],
+                            fontSize: 8, color: ColorStyles.secondaryOrange)),
+                    Text(
+                        '${group.current_participants}/${group.max_participants}',
                         style:
                             const TextStyle(fontSize: 12, color: Colors.black)),
                   ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/group_controller.dart';
+import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/home/chat/group_list_page.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
@@ -18,7 +18,7 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -32,8 +32,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(GroupStatusController()); // Group Mock Data
-
     return GetMaterialApp(
       title: 'Morning Buddies',
       initialRoute: '/auth_gate',
@@ -42,7 +40,13 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/signin', page: () => const SignIn()),
         GetPage(name: '/main', page: () => const HomeBottomNav()),
         GetPage(name: '/home_main', page: () => const HomeMain()),
-        GetPage(name: '/chat', page: () => GroupListPage()),
+        GetPage(
+            name: '/chat',
+            page: () => GroupListPage(),
+            binding: BindingsBuilder(() {
+              Get.lazyPut<GroupChatStatusController>(
+                  () => GroupChatStatusController());
+            })),
         GetPage(name: '/profile', page: () => const HomeProfile()),
         GetPage(name: '/search', page: () => const HomeSearch()),
         GetPage(name: '/setting', page: () => const HomeSetting()),

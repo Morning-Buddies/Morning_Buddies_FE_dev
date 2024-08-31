@@ -1,16 +1,15 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:morning_buddies/service/chat_service.dart';
 
-class GroupStatus {
+class GroupChatStatus {
   final String name;
   final String time;
   final int memberCount;
   final List<String> memberIDs;
   final String groupID;
 
-  GroupStatus({
+  GroupChatStatus({
     required this.name,
     required this.time,
     required this.memberIDs,
@@ -19,8 +18,8 @@ class GroupStatus {
   });
 }
 
-class GroupStatusController extends GetxController {
-  var groups = <GroupStatus>[].obs;
+class GroupChatStatusController extends GetxController {
+  var groups = <GroupChatStatus>[].obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -49,7 +48,7 @@ class GroupStatusController extends GetxController {
         List<String> memberIDs =
             List<String>.from(groupData['memberIDs'] ?? []);
 
-        groups.add(GroupStatus(
+        groups.add(GroupChatStatus(
           memberCount: memberIDs.length,
           memberIDs: memberIDs,
           name: groupData['name'] ?? 'Unknown Group', // 기본 값 추가
@@ -62,7 +61,7 @@ class GroupStatusController extends GetxController {
     }
   }
 
-  void removeGroup(GroupStatus group) {
+  void removeGroup(GroupChatStatus group) {
     groups.remove(group);
   }
 }
