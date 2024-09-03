@@ -1,4 +1,5 @@
 import 'dart:convert'; // jsonDecode를 사용하기 위해 필요합니다.
+import 'dart:ffi';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -60,6 +61,18 @@ class GroupinfoController extends GetxController {
       }
     } else {
       throw Exception("Failed to fetch");
+    }
+  }
+
+  Future<void> _getGroupMember(Long groupId) async {
+    final response = await http.get(Uri.parse("$baseUrl/groups/{$groupId}"));
+    if (response.statusCode == 200) {
+      try {
+        // Group Member get
+        // group_id 로 member 테이블에 접근할 것
+      } catch (e) {
+        throw Exception("could not get group member");
+      }
     }
   }
 }

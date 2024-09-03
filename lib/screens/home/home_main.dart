@@ -109,7 +109,7 @@ class _HomeMainState extends State<HomeMain> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end, // 하단 정렬
+                  // mainAxisAlignment: MainAxisAlignment.end, // 하단 정렬
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(

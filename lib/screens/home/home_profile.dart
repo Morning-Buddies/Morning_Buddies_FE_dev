@@ -294,13 +294,12 @@ class PerformanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 360,
+      width: MediaQuery.of(context).size.width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           const TimePreferenceRow(),
           SizedBox(
-            width: 176,
             height: 76,
             child: Card(
               elevation: 0,

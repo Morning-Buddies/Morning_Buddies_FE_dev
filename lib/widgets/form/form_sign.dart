@@ -270,7 +270,7 @@ class _SignupFormState extends State<SignUpForm> {
     return Form(
       key: _formKey,
       child: SizedBox(
-        width: 374,
+        width: MediaQuery.of(context).size.width * 0.9,
         child: SingleChildScrollView(
           child: Column(
             children: [

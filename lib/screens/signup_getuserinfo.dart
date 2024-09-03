@@ -16,7 +16,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
   void _updateVisibleFields(int newCount) {
     setState(() {
       _visibleFieldCount = newCount;
-      _progressPercent = _visibleFieldCount / 9;
+      _progressPercent = _visibleFieldCount / 8;
     });
   }
 
@@ -26,6 +26,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        leadingWidth: 36,
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -38,9 +39,8 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
           //   style: const TextStyle(fontSize: 16),
           // ),
           barRadius: const Radius.circular(8.0),
-          // IOS, Android 둘다 overflow 안나는 값으로 설정해두었습니다
-          width: 320,
-          lineHeight: 16.0,
+          width: MediaQuery.of(context).size.width * 0.8,
+          lineHeight: 8.0,
           percent: _progressPercent <= 0.9
               ? _progressPercent
               : 1.0, // 1.0 이상 올라가지 않게 설정
