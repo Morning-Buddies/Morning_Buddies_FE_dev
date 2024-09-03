@@ -26,6 +26,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        leadingWidth: 36,
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -38,7 +39,7 @@ class _GetUserInfoScrceenState extends State<GetUserInfoScrceen> {
           //   style: const TextStyle(fontSize: 16),
           // ),
           barRadius: const Radius.circular(8.0),
-          width: MediaQuery.of(context).size.width * 0.7,
+          width: MediaQuery.of(context).size.width * 0.8,
           lineHeight: 8.0,
           percent: _progressPercent <= 0.9
               ? _progressPercent
