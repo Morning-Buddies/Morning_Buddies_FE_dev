@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/group_controller.dart';
+import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/home/chat/chat_page.dart';
 
 class GroupListPage extends StatelessWidget {
   GroupListPage({super.key});
-  final GroupStatusController _groupStatusController =
-      Get.put(GroupStatusController());
+  final GroupChatStatusController _groupStatusController =
+      Get.put(GroupChatStatusController());
 
   @override
   Widget build(BuildContext context) {

@@ -7,31 +7,58 @@ A new Flutter project.
 
 📦lib
  ┣ 📂models
+ ┃ ┣ 📜chat_room.dart
+ ┃ ┣ 📜groupchat_controller.dart
+ ┃ ┣ 📜groupinfo_controller.dart
+ ┃ ┗ 📜message.dart
  ┣ 📂screens
+ ┃ ┣ 📂game
+ ┃ ┃ ┣ 📜game_jigsaw_puzzle.dart
+ ┃ ┃ ┗ 📜game_start.dart
  ┃ ┣ 📂home
- ┃ ┃ ┣ 📜home_chat.dart
+ ┃ ┃ ┣ 📂chat
+ ┃ ┃ ┃ ┣ 📜chat_bubble.dart
+ ┃ ┃ ┃ ┣ 📜chat_page.dart
+ ┃ ┃ ┃ ┗ 📜group_list_page.dart
  ┃ ┃ ┣ 📜home_create.dart
+ ┃ ┃ ┣ 📜home_group_detail.dart
  ┃ ┃ ┣ 📜home_main.dart
  ┃ ┃ ┣ 📜home_profile.dart
- ┃ ┃ ┗ 📜home_setting.dart
+ ┃ ┃ ┣ 📜home_search.dart
+ ┃ ┃ ┣ 📜home_setting.dart
+ ┃ ┃ ┣ 📜my_group_detail.dart
+ ┃ ┃ ┗ 📜password_reset.dart
  ┃ ┣ 📂onboarding
  ┃ ┃ ┣ 📜onboarding_signin.dart
  ┃ ┃ ┗ 📜onboarding_signup.dart
- ┃ ┗ 📜signup_getuserinfo.dart
+ ┃ ┣ 📜signup_getuserinfo.dart
+ ┃ ┗ 📜subscription_screen.dart
  ┣ 📂service
+ ┃ ┣ 📜auth_gate.dart
+ ┃ ┣ 📜auth_service.dart
+ ┃ ┣ 📜chat_service.dart
+ ┃ ┣ 📜groupchat_service.dart
+ ┃ ┗ 📜time_service.dart
  ┣ 📂utils
  ┃ ┣ 📜debouce.dart
  ┃ ┣ 📜design_palette.dart
  ┃ ┣ 📜throttle.dart
+ ┃ ┣ 📜time_utils.dart
  ┃ ┗ 📜validator.dart
  ┣ 📂widgets
- ┃ ┣ 📜custom_dropdown.dart
- ┃ ┣ 📜custom_form_field.dart
- ┃ ┣ 📜custom_outlined_button.dart
- ┃ ┣ 📜form_login.dart
- ┃ ┣ 📜form_sign.dart
+ ┃ ┣ 📂button
+ ┃ ┃ ┣ 📜custom_outlined_button.dart
+ ┃ ┃ ┗ 📜section_with_btn.dart
+ ┃ ┣ 📂dropdown
+ ┃ ┃ ┣ 📜custom_dropdown.dart
+ ┃ ┃ ┣ 📜number_dropdown.dart
+ ┃ ┃ ┗ 📜signup_dropdown.dart
+ ┃ ┣ 📂form
+ ┃ ┃ ┣ 📜custom_form_field.dart
+ ┃ ┃ ┣ 📜form_login.dart
+ ┃ ┃ ┗ 📜form_sign.dart
  ┃ ┣ 📜home_bottom_nav.dart
- ┃ ┗ 📜signup_dropdown.dart
+ ┃ ┗ 📜user_tile.dart
  ┣ 📜firebase_options.dart
  ┗ 📜main.dart
 

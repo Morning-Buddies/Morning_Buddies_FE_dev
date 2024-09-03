@@ -42,31 +42,6 @@ class _SignupFormState extends State<SignUpForm> {
 
   String apiKey = dotenv.get("PROJECT_API_KEY");
 
-  Future<void> _submitFormData() async {
-    final Map<String, String> formData = {
-      'email': _controllers['e-mail(id)']!.text,
-      'password': _controllers['password']!.text,
-      'firstName': _controllers['first name']!.text,
-      'lastName': _controllers['last name']!.text,
-      'phone': _controllers['phone #']!.text,
-      'preferredTime': _selectedWakeUpTime!
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(apiKey),
-        body: formData,
-      );
-      if (response.statusCode == 200) {
-        Fluttertoast.showToast(msg: '회원가입이 완료되었습니다.');
-      } else {
-        Fluttertoast.showToast(msg: '회원가입에 실패했습니다.');
-      }
-    } catch (e) {
-      Fluttertoast.showToast(msg: '오류가 발생했습니다: $e');
-    }
-  }
-
   @override
   void dispose() {
     for (var controller in _controllers.values) {

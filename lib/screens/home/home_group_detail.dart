@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:morning_buddies/models/groupinfo_controller.dart';
 
 class HomeGroupDetail extends StatefulWidget {
   const HomeGroupDetail({super.key});
@@ -13,6 +15,16 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
   // Home이나 Search 결과로 나오는 불특정다수 group 정보들에 대해선 getX 미사용으로 결정
   // getX로 관리하는 데이터는 "개인" 유저와 관련된 것들만 하기로.
   // 비록 검색 결과로 나온 group을 클릭해서 already-joined 일지라도 그건 해당 페이지에서만 사용하는 값이기 때문에 api로 필터링하지 않고 front에서 setState로 판단해서 ui 보여주기로.
+
+  late final GroupInfoStatus groupData;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    groupData = Get.arguments as GroupInfoStatus;
+  }
+
   void _joinGroup() {
     setState(() {
       isJoined = true;
@@ -56,6 +68,7 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        title: Text(groupData.group_name),
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
@@ -80,42 +93,42 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '출근 전 헬스',
-                    style: TextStyle(
+                  Text(
+                    groupData.group_name,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Row(
+                  Row(
                     children: [
-                      Image(
+                      const Image(
                         image: AssetImage('assets/images/logo_solo-bird.png'),
                         height: 20,
                       ),
-                      SizedBox(width: 8),
-                      Text('현재 4명'),
+                      const SizedBox(width: 8),
+                      Text('현재 ${groupData.current_participants}명'),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.access_time, color: Colors.orange),
-                      SizedBox(width: 8),
-                      Text('7:00 AM'),
+                      const Icon(Icons.access_time, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      Text(groupData.wake_up_time),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    '갓생 살고 싶은 판교 직장인들 함께 해요:)\n<필독>\n1. 3번 이상 실패시 강퇴\n2. 홍보/욕설금지',
-                    style: TextStyle(fontSize: 16),
+                  Text(
+                    groupData.description,
+                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 36),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Members',
                         style: TextStyle(
                           fontSize: 18,
@@ -123,8 +136,8 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
                         ),
                       ),
                       Text(
-                        '4 / 10 members',
-                        style: TextStyle(
+                        '${groupData.current_participants} / ${groupData.max_participants}',
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                         ),
@@ -188,7 +201,6 @@ class MemberTile extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 24,
-            backgroundImage: AssetImage('assets/avatar_placeholder.png'),
           ),
           const SizedBox(width: 16),
           Text(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/group_controller.dart';
+import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class MyGroupDetail extends StatefulWidget {
@@ -11,7 +11,7 @@ class MyGroupDetail extends StatefulWidget {
 }
 
 class _MyGroupDetailState extends State<MyGroupDetail> {
-  final GroupStatusController groupStatusController = Get.find();
+  final GroupChatStatusController groupChatStatusController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,9 @@ class _MyGroupDetailState extends State<MyGroupDetail> {
           Obx(() {
             return ListView.separated(
               shrinkWrap: true,
-              itemCount: groupStatusController.groups.length,
+              itemCount: groupChatStatusController.groups.length,
               itemBuilder: (context, index) {
-                final group = groupStatusController.groups[index];
+                final group = groupChatStatusController.groups[index];
                 return ListTile(
                   leading: const CircleAvatar(
                     backgroundColor: Colors.grey,
@@ -82,7 +82,7 @@ class _MyGroupDetailState extends State<MyGroupDetail> {
                                             color: ColorStyles.secondaryOrange),
                                       ),
                                       onPressed: () {
-                                        groupStatusController
+                                        groupChatStatusController
                                             .removeGroup(group);
                                         Navigator.pop(
                                             context); // Close the bottom sheet

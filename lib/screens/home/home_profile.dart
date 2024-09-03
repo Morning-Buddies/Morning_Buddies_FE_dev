@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/group_controller.dart';
+import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -342,18 +342,18 @@ class GroupStatusList extends StatelessWidget {
   const GroupStatusList({super.key});
   @override
   Widget build(BuildContext context) {
-    final GroupStatusController groupStatusController = Get.find();
+    final GroupChatStatusController groupChatStatusController = Get.find();
     return SizedBox(
       height: 100,
       child: Obx(() {
         return ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount:
-              groupStatusController.groups.length + 1, // 추가된 "Upgrade" 카드
+              groupChatStatusController.groups.length + 1, // 추가된 "Upgrade" 카드
           itemBuilder: (context, index) {
-            if (index < groupStatusController.groups.length) {
+            if (index < groupChatStatusController.groups.length) {
               return _GroupStatusCard(
-                  group: groupStatusController.groups[index]);
+                  group: groupChatStatusController.groups[index]);
             } else {
               return const _UpgradeCard();
             }
@@ -365,7 +365,7 @@ class GroupStatusList extends StatelessWidget {
 }
 
 class _GroupStatusCard extends StatelessWidget {
-  final GroupStatus group;
+  final GroupChatStatus group;
 
   const _GroupStatusCard({required this.group});
 
