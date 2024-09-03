@@ -12,10 +12,6 @@ class HomeGroupDetail extends StatefulWidget {
 class _HomeGroupDetailState extends State<HomeGroupDetail> {
   bool isJoined = false;
 
-  // Home이나 Search 결과로 나오는 불특정다수 group 정보들에 대해선 getX 미사용으로 결정
-  // getX로 관리하는 데이터는 "개인" 유저와 관련된 것들만 하기로.
-  // 비록 검색 결과로 나온 group을 클릭해서 already-joined 일지라도 그건 해당 페이지에서만 사용하는 값이기 때문에 api로 필터링하지 않고 front에서 setState로 판단해서 ui 보여주기로.
-
   late final GroupInfoStatus groupData;
 
   @override
@@ -26,6 +22,7 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
   }
 
   void _joinGroup() {
+    // 추후 /groups/{groupId}/join-request 로 POST 로직 필요
     setState(() {
       isJoined = true;
     });
