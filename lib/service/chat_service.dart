@@ -8,12 +8,14 @@ class ChatService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Creates a new chat room
-  Future<void> createChatRoom(String name, List<String> memberIDs) async {
+  Future<void> createChatRoom(
+      String name, String leaderId, List<String> memberIDs) async {
     final String chatRoomID = _firestore.collection("chat_rooms").doc().id;
 
     ChatRoom chatRoom = ChatRoom(
       id: chatRoomID,
       name: name,
+      leaderId: leaderId,
       memberIDs: memberIDs,
       createdAt: Timestamp.now(),
     );

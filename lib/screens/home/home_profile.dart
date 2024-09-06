@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
+import 'package:morning_buddies/models/groupinfo_controller.dart';
 import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -68,12 +69,13 @@ class _HomeProfileState extends State<HomeProfile> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _ProfileCard(name: _userName),
               const SizedBox(height: 16.0),
+              // Pixel Err
               const _SectionTitle("Your Performance"),
               const PerformanceCard(),
               const SizedBox(height: 16.0),
@@ -296,7 +298,7 @@ class PerformanceCard extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const TimePreferenceRow(),
           SizedBox(
@@ -341,18 +343,17 @@ class GroupStatusList extends StatelessWidget {
   const GroupStatusList({super.key});
   @override
   Widget build(BuildContext context) {
-    final GroupChatStatusController groupChatStatusController = Get.find();
+    final GroupinfoController groupinfoController = Get.find();
     return SizedBox(
       height: 100,
       child: Obx(() {
         return ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount:
-              groupChatStatusController.groups.length + 1, // 추가된 "Upgrade" 카드
+          itemCount: groupinfoController.getResponse.length + 1,
           itemBuilder: (context, index) {
-            if (index < groupChatStatusController.groups.length) {
+            if (index < groupinfoController.getResponse.length) {
               return _GroupStatusCard(
-                  group: groupChatStatusController.groups[index]);
+                  group: groupinfoController.getResponse[index]);
             } else {
               return const _UpgradeCard();
             }
@@ -364,7 +365,7 @@ class GroupStatusList extends StatelessWidget {
 }
 
 class _GroupStatusCard extends StatelessWidget {
-  final GroupChatStatus group;
+  final GroupInfoStatus group;
 
   const _GroupStatusCard({required this.group});
 
@@ -386,21 +387,26 @@ class _GroupStatusCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
-                    Icons.circle,
-                    size: 32, // 아이콘 크기 줄임
-                    color: Colors.grey,
+                  const CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey,
+                    foregroundImage:
+                        AssetImage("assets/images/logo_solo-bird.png"),
                   ),
                   const SizedBox(
                     width: 8.0,
                   ),
                   Column(
                     children: [
-                      Text(
-                        group.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      SizedBox(
+                        width: 110,
+                        child: Text(
+                          group.group_name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       // Text(
                       //   group.status,
@@ -413,7 +419,7 @@ class _GroupStatusCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                group.time,
+                group.wake_up_time,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],

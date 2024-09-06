@@ -1,5 +1,4 @@
 import 'dart:convert'; // jsonDecode를 사용하기 위해 필요합니다.
-import 'dart:ffi';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -41,6 +40,9 @@ class GroupInfoStatus {
 
 class GroupinfoController extends GetxController {
   var getResponse = <GroupInfoStatus>[].obs;
+  var query = ''.obs;
+  var results = [].obs;
+
   String baseUrl = dotenv.env["PROJECT_API_KEY"]!;
 
   @override
@@ -64,15 +66,29 @@ class GroupinfoController extends GetxController {
     }
   }
 
-  Future<void> _getGroupMember(Long groupId) async {
-    final response = await http.get(Uri.parse("$baseUrl/groups/{$groupId}"));
-    if (response.statusCode == 200) {
-      try {
-        // Group Member get
-        // group_id 로 member 테이블에 접근할 것
-      } catch (e) {
-        throw Exception("could not get group member");
-      }
+  void search(String queryText) {
+    query.value = queryText.toLowerCase();
+    print(query.value);
+    results.value = getResponse
+        .where((group) =>
+            group.group_name.toLowerCase().contains(queryText) ||
+            group.wake_up_time.toLowerCase().contains(queryText))
+        .toList();
+    for (var group in results) {
+      print(
+          'Group Name: ${group.group_name}, Wake-up Time: ${group.wake_up_time}');
     }
   }
+
+  // Future<void> _getGroupMember(int groupId) async {
+  //   final response = await http.get(Uri.parse("$baseUrl/groups/{$groupId}"));
+  //   if (response.statusCode == 200) {
+  //     try {
+  //       // Group Member get
+  //       // group_id 로 member 테이블에 접근할 것
+  //     } catch (e) {
+  //       throw Exception("could not get group member");
+  //     }
+  //   }
+  // }
 }

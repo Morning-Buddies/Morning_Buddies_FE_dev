@@ -10,12 +10,14 @@ import 'chat_bubble.dart';
 class ChatPage extends StatefulWidget {
   final String chatRoomID;
   final String chatRoomName;
+  final String leaderID;
   final List<String> memberIDs;
 
   const ChatPage({
     Key? key,
     required this.chatRoomID,
     required this.chatRoomName,
+    required this.leaderID,
     required this.memberIDs,
   }) : super(key: key);
 
