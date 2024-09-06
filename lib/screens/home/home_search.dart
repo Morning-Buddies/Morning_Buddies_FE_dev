@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:morning_buddies/models/groupinfo_controller.dart';
 
 class HomeSearch extends StatefulWidget {
   const HomeSearch({super.key});
@@ -10,6 +12,8 @@ class HomeSearch extends StatefulWidget {
 class _HomeSearchState extends State<HomeSearch> {
   final TextEditingController _searchController = TextEditingController();
   bool _showHintText = true;
+  final GroupinfoController _groupinfoController =
+      Get.put(GroupinfoController());
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +39,10 @@ class _HomeSearchState extends State<HomeSearch> {
           onChanged: (value) {
             setState(() {
               _showHintText = value.isEmpty;
-              // 검색 API Logic
             });
+          },
+          onSubmitted: (value) {
+            _groupinfoController.search(value.toLowerCase());
           },
         ),
         backgroundColor: Colors.white,
@@ -56,8 +62,7 @@ class _HomeSearchState extends State<HomeSearch> {
           ),
           const SizedBox(height: 16),
           SingleChildScrollView(
-            // 버튼 스크롤 가능하도록 설정
-            scrollDirection: Axis.horizontal, // 가로 스크롤
+            scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 _buildRecommendationButton('러닝'),
@@ -68,26 +73,49 @@ class _HomeSearchState extends State<HomeSearch> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // Display search results
+          Expanded(
+            child: Obx(() {
+              if (_groupinfoController.results.isEmpty) {
+                return const Center(
+                  child: Text('No results found'),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: _groupinfoController.results.length,
+                  itemBuilder: (context, index) {
+                    final group = _groupinfoController.results[index];
+                    return ListTile(
+                      title: Text(group.group_name),
+                      subtitle: Text('Wake-up Time: ${group.wake_up_time}'),
+                    );
+                  },
+                );
+              }
+            }),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildRecommendationButton(String text) {
+    // 💡 검색창에 인풋이 들어왔다가 지워져도 다시 나타나야 함
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.0), // 버튼 간격
+      padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: ElevatedButton(
-        onPressed: () {}, // 버튼 클릭 시 동작 정의
+        onPressed: () {
+          _groupinfoController.search(text.toLowerCase());
+        },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white, // 버튼 배경색
+          backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          elevation: 0.1, // 버튼 글자색
+          elevation: 0.1,
           shape: RoundedRectangleBorder(
-            // 버튼 모양 둥글게
             borderRadius: BorderRadius.circular(50.0),
           ),
-          padding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 8), // 버튼 내부 패딩
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
         child: Text(text),
       ),

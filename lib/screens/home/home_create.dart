@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:morning_buddies/service/chat_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
 import 'package:morning_buddies/widgets/dropdown/number_dropdown.dart';
@@ -22,6 +23,8 @@ class _HomeCreateState extends State<HomeCreate> {
   // TimePicker 관련 변수
   TimeOfDay initialTime = TimeOfDay.now();
   TimeOfDay? selectedTime;
+  // ChatService
+  final ChatService _chatService = ChatService();
 
   Future getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
@@ -84,11 +87,7 @@ class _HomeCreateState extends State<HomeCreate> {
               width: 380,
               height: 42,
               child: OutlinedButton(
-                  onPressed: _isFormFilled
-                      ? () {
-                          // POST Logic will be here
-                        }
-                      : null,
+                  onPressed: _isFormFilled ? () {} : null,
                   style: OutlinedButton.styleFrom(
                     backgroundColor:
                         _isFormFilled ? ColorStyles.orange : Colors.grey,

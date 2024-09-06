@@ -29,9 +29,9 @@ class _MyGroupDetailState extends State<MyGroupDetail> {
           Obx(() {
             return ListView.separated(
               shrinkWrap: true,
-              itemCount: groupChatStatusController.groups.length,
+              itemCount: groupChatStatusController.chatRooms.length,
               itemBuilder: (context, index) {
-                final group = groupChatStatusController.groups[index];
+                final group = groupChatStatusController.chatRooms[index];
                 return ListTile(
                   leading: const CircleAvatar(
                     backgroundColor: Colors.grey,

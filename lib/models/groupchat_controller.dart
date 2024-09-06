@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class GroupChatStatus {
   final String name;
   final String time;
+  final String leaderId;
   final int memberCount;
   final List<String> memberIDs;
   final String groupID;
@@ -12,6 +13,7 @@ class GroupChatStatus {
   GroupChatStatus({
     required this.name,
     required this.time,
+    required this.leaderId,
     required this.memberIDs,
     required this.memberCount,
     required this.groupID,
@@ -19,7 +21,7 @@ class GroupChatStatus {
 }
 
 class GroupChatStatusController extends GetxController {
-  var groups = <GroupChatStatus>[].obs;
+  var chatRooms = <GroupChatStatus>[].obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -34,11 +36,11 @@ class GroupChatStatusController extends GetxController {
     try {
       // 최적화된 쿼리: 현재 사용자가 포함된 그룹만 가져옴
       QuerySnapshot groupSnapshot = await FirebaseFirestore.instance
-          .collection('groups')
+          .collection('chat_rooms')
           .where('memberIDs', arrayContains: currentUserID)
           .get();
 
-      groups.clear(); // Clear the local list before populating
+      chatRooms.clear(); // Clear the local list before populating
 
       for (var doc in groupSnapshot.docs) {
         Map<String, dynamic> groupData = doc.data() as Map<String, dynamic>;
@@ -48,9 +50,10 @@ class GroupChatStatusController extends GetxController {
         List<String> memberIDs =
             List<String>.from(groupData['memberIDs'] ?? []);
 
-        groups.add(GroupChatStatus(
+        chatRooms.add(GroupChatStatus(
           memberCount: memberIDs.length,
           memberIDs: memberIDs,
+          leaderId: groupData['leaderId'],
           name: groupData['name'] ?? 'Unknown Group', // 기본 값 추가
           time: "Time Placeholder", // 실제 시간을 여기에 추가할 수 있음
           groupID: doc.id,
@@ -62,6 +65,7 @@ class GroupChatStatusController extends GetxController {
   }
 
   void removeGroup(GroupChatStatus group) {
-    groups.remove(group);
+    // GetX 가 관리하는 데이터에서만 Remove, DB에서도 Remove 필요
+    chatRooms.remove(group);
   }
 }
