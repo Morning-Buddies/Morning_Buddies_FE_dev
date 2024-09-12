@@ -4,9 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/models/groupinfo_controller.dart';
-import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/dropdown/custom_dropdown.dart';
@@ -35,7 +33,7 @@ class _HomeProfileState extends State<HomeProfile> {
         String name = "${userDoc['lastname']} ${userDoc['firstname']}";
         if (mounted) {
           setState(() {
-            _userName = name; // Update the state with the fetched name
+            _userName = name;
           });
         }
         print("User Name: $name");
@@ -49,15 +47,12 @@ class _HomeProfileState extends State<HomeProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getUserName();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    getUserName();
     super.dispose();
   }
 
@@ -77,6 +72,7 @@ class _HomeProfileState extends State<HomeProfile> {
               const SizedBox(height: 16.0),
               // Pixel Err
               const _SectionTitle("Your Performance"),
+              const SizedBox(height: 16.0),
               const PerformanceCard(),
               const SizedBox(height: 16.0),
               SectionWithButton(
@@ -92,6 +88,8 @@ class _HomeProfileState extends State<HomeProfile> {
                   buttonText: "View Details",
                   // 💡 라우트 관리 + 상태관리 필요
                   onPressed: () => Get.toNamed('/my_group_detail')),
+              const SizedBox(height: 16.0),
+
               const GroupStatusList(),
             ],
           ),
@@ -130,13 +128,7 @@ class _ProfileCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeSetting()),
-                      );
-                    },
+                    onPressed: () => Get.toNamed('/setting'),
                     icon: const Icon(Icons.settings),
                   ),
                 ],
@@ -295,14 +287,22 @@ class PerformanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fixed card size (width and height)
+    double cardWidth = 176;
+    double cardHeight = 76;
+
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const TimePreferenceRow(),
+          // TIME Preferred
+          const SizedBox(
+            child: TimePreferenceRow(),
+          ),
+          // Alarm Performance
           SizedBox(
-            height: 76,
+            width: cardWidth,
+            height: cardHeight,
             child: Card(
               elevation: 0,
               color: Colors.transparent,
@@ -320,7 +320,7 @@ class PerformanceCard extends StatelessWidget {
                       "Alarm Performance",
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
                       "8 times Recoreded",
                       style: TextStyle(
