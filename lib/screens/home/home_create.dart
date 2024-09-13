@@ -110,11 +110,18 @@ class _HomeCreateState extends State<HomeCreate> {
 
   Widget _buildPhotoArea() {
     return _image != null
-        ? SizedBox(
-            width: 356,
-            height: 128,
-            child: Image.file(File(_image!.path)),
-          )
+        ? Stack(children: [
+            IconButton(
+                onPressed: () {
+                  getImage(ImageSource.gallery);
+                },
+                icon: const Icon(Icons.photo_camera_back_sharp)),
+            SizedBox(
+              width: 356,
+              height: 128,
+              child: Image.file(File(_image!.path)),
+            ),
+          ])
         : Container(
             width: 356,
             height: 128,
@@ -253,8 +260,10 @@ class _HomeCreateState extends State<HomeCreate> {
                   ? selectedTime!.format(context)
                   : "Press Button and Choose Wake-Up Time",
               textAlign: TextAlign.start,
-              style: const TextStyle(
-                color: ColorStyles.btnGrey,
+              style: TextStyle(
+                color: selectedTime != null
+                    ? ColorStyles.secondaryOrange
+                    : ColorStyles.btnGrey,
               ),
             ),
           ),

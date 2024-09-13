@@ -1,9 +1,12 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/models/groupinfo_controller.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -100,10 +103,29 @@ class _HomeProfileState extends State<HomeProfile> {
 }
 
 // Profile Card
-class _ProfileCard extends StatelessWidget {
+class _ProfileCard extends StatefulWidget {
   final String name;
 
   const _ProfileCard({required this.name});
+
+  @override
+  State<_ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<_ProfileCard> {
+  XFile? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future getImage(ImageSource imageSource) async {
+    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    final XFile? pickedFile = await _picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
+      setState(() {
+        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
+        // 💡 추후 GET / POST 로직 필요
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,14 +136,35 @@ class _ProfileCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            const CircleAvatar(radius: 30, backgroundColor: Colors.grey),
+            Stack(children: [
+              _image != null
+                  ? CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(_image!.path),
+                      // backgroundColor: Colors.transparent,
+                    )
+                  : const CircleAvatar(
+                      radius: 30, backgroundColor: Colors.grey),
+              Positioned(
+                left: 30,
+                bottom: 20,
+                child: IconButton(
+                  iconSize: 12,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    getImage(ImageSource.gallery);
+                  },
+                  icon: const Icon(Icons.photo_camera),
+                ),
+              )
+            ]),
             const SizedBox(width: 16),
             Expanded(
               // Expanded 추가
               child: Row(
                 children: [
                   Text(
-                    name,
+                    widget.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
