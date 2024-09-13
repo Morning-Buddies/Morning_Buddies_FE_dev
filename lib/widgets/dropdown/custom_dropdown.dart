@@ -87,31 +87,39 @@ class _CustomDropdownState extends State<CustomDropdown> {
       link: _layerLink,
       child: Container(
         width: 156,
-        height: 28,
+        height: 24,
         decoration: BoxDecoration(
           border: Border.all(color: ColorStyles.secondaryOrange),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              widget.value,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextButton(
-              onPressed: () {
-                // _overlayEntry?.remove();
-                // _overlayEntry = null;
-                _toggleOverlay();
-              },
-              child: const Text("edit",
-                  style: TextStyle(
-                    fontSize: 8,
-                    color: ColorStyles.secondaryOrange,
-                  )),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  widget.value,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () {
+                  // _overlayEntry?.remove();
+                  // _overlayEntry = null;
+                  _toggleOverlay();
+                },
+                child: const Text("edit",
+                    style: TextStyle(
+                      fontSize: 8,
+                      color: ColorStyles.secondaryOrange,
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,12 +9,14 @@ class CustomTextFormField extends StatelessWidget {
   final bool obscuretext;
   final ValueChanged<String>? onChanged;
   final TextInputAction textInputAction;
+  final int? maxLength;
 
   const CustomTextFormField({
     Key? key,
     required this.controller,
     required this.hintText,
     required this.emptyErrorText,
+    this.maxLength,
     this.validator,
     this.obscuretext = false,
     this.onChanged,
@@ -24,18 +26,20 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLength: maxLength,
       controller: controller,
       obscureText: obscuretext,
       textInputAction: textInputAction,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
+        border: const OutlineInputBorder(
+          borderSide:
+              BorderSide(color: ColorStyles.lightGray), // Default border color
+        ),
         enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
           borderSide: BorderSide(
-              // style: BorderStyle.solid,
-              color: ColorStyles.btnGrey,
-              width: 0.5),
+              color: ColorStyles.lightGray), // Border color when not focused
         ),
         hintText: hintText,
       ),

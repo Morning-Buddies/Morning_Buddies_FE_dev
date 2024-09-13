@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:morning_buddies/service/chat_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
 import 'package:morning_buddies/widgets/dropdown/number_dropdown.dart';
@@ -24,7 +23,6 @@ class _HomeCreateState extends State<HomeCreate> {
   TimeOfDay initialTime = TimeOfDay.now();
   TimeOfDay? selectedTime;
   // ChatService
-  final ChatService _chatService = ChatService();
 
   Future getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
@@ -84,7 +82,7 @@ class _HomeCreateState extends State<HomeCreate> {
             const SizedBox(height: 16),
             _buildInputArea(),
             SizedBox(
-              width: 380,
+              width: MediaQuery.of(context).size.width * 0.9,
               height: 42,
               child: OutlinedButton(
                   onPressed: _isFormFilled ? () {} : null,
@@ -94,7 +92,7 @@ class _HomeCreateState extends State<HomeCreate> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
                     ),
-                    side: const BorderSide(color: Colors.transparent),
+                    side: const BorderSide(color: ColorStyles.btnGrey),
                   ),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -112,16 +110,23 @@ class _HomeCreateState extends State<HomeCreate> {
 
   Widget _buildPhotoArea() {
     return _image != null
-        ? SizedBox(
-            width: 356,
-            height: 128,
-            child: Image.file(File(_image!.path)),
-          )
+        ? Stack(children: [
+            IconButton(
+                onPressed: () {
+                  getImage(ImageSource.gallery);
+                },
+                icon: const Icon(Icons.photo_camera_back_sharp)),
+            SizedBox(
+              width: 356,
+              height: 128,
+              child: Image.file(File(_image!.path)),
+            ),
+          ])
         : Container(
             width: 356,
             height: 128,
             decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
+                border: Border.all(width: 1, color: ColorStyles.btnGrey),
                 borderRadius: BorderRadius.circular(8),
                 color: const Color(0xFFEFEFF0)),
             child: Column(
@@ -174,6 +179,7 @@ class _HomeCreateState extends State<HomeCreate> {
           padding: const EdgeInsets.all(16.0),
           child: CustomTextFormField(
             controller: _groupNameController,
+            maxLength: 22,
             hintText: "Write Group Name",
             onChanged: (value) => _updateFormFilledState(),
             emptyErrorText: "",
@@ -194,7 +200,7 @@ class _HomeCreateState extends State<HomeCreate> {
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(398, 56),
               backgroundColor: Colors.white,
-              side: const BorderSide(color: ColorStyles.btnGrey),
+              side: const BorderSide(color: ColorStyles.lightGray),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6),
               ),
@@ -254,8 +260,10 @@ class _HomeCreateState extends State<HomeCreate> {
                   ? selectedTime!.format(context)
                   : "Press Button and Choose Wake-Up Time",
               textAlign: TextAlign.start,
-              style: const TextStyle(
-                color: Colors.grey,
+              style: TextStyle(
+                color: selectedTime != null
+                    ? ColorStyles.secondaryOrange
+                    : ColorStyles.btnGrey,
               ),
             ),
           ),
@@ -296,8 +304,12 @@ class _HomeCreateState extends State<HomeCreate> {
                 hintText: "Enter Group Description",
                 border: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Color(0xFFEFEFF0),
+                    color: ColorStyles.lightGray,
                   ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: ColorStyles.lightGray), // When not focused
                 ),
               ),
             ),

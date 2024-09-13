@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class SectionWithButton extends StatelessWidget {
   final String title;
   final String buttonText;
-  final VoidCallback? onPressed; // 버튼 클릭 시 호출될 함수 (옵션)
+  final VoidCallback? onPressed;
 
   const SectionWithButton({
     super.key,
@@ -15,12 +16,18 @@ class SectionWithButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _SectionTitle(title),
-        _BorderedTextButton(buttonText, onPressed: onPressed), // onPressed 전달
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _SectionTitle(title),
+          _BorderedTextButton(
+            buttonText,
+            onPressed: onPressed,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -48,38 +55,41 @@ class _SectionTitle extends StatelessWidget {
 
 class _BorderedTextButton extends StatelessWidget {
   final String text;
-  final VoidCallback? onPressed; // 버튼 클릭 시 호출될 함수 (옵션)
+  final VoidCallback? onPressed;
 
   const _BorderedTextButton(this.text, {super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      style: ButtonStyle(
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: const BorderSide(color: ColorStyles.secondaryOrange),
-          ),
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
+        minimumSize: Size.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        foregroundColor: ColorStyles.secondaryOrange,
+        side: const BorderSide(color: ColorStyles.secondaryOrange),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text,
-            style: const TextStyle(
-              color: ColorStyles.secondaryOrange,
-              fontSize: 12,
+      onPressed: onPressed,
+      child: SizedBox(
+        height: 22,
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 2.0, bottom: 2.0),
+              child: Text(
+                text,
+                style: const TextStyle(fontSize: 12),
+              ),
             ),
-          ),
-          const Icon(
-            Icons.keyboard_arrow_right,
-            color: ColorStyles.secondaryOrange,
-            size: 16.0,
-          ),
-        ],
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.arrow_forward_ios_sharp,
+              size: 12,
+            ),
+          ],
+        ),
       ),
     );
   }

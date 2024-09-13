@@ -1,12 +1,13 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/groupchat_controller.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/models/groupinfo_controller.dart';
-import 'package:morning_buddies/screens/home/home_setting.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/dropdown/custom_dropdown.dart';
@@ -35,7 +36,7 @@ class _HomeProfileState extends State<HomeProfile> {
         String name = "${userDoc['lastname']} ${userDoc['firstname']}";
         if (mounted) {
           setState(() {
-            _userName = name; // Update the state with the fetched name
+            _userName = name;
           });
         }
         print("User Name: $name");
@@ -49,15 +50,12 @@ class _HomeProfileState extends State<HomeProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getUserName();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    getUserName();
     super.dispose();
   }
 
@@ -77,6 +75,7 @@ class _HomeProfileState extends State<HomeProfile> {
               const SizedBox(height: 16.0),
               // Pixel Err
               const _SectionTitle("Your Performance"),
+              const SizedBox(height: 16.0),
               const PerformanceCard(),
               const SizedBox(height: 16.0),
               SectionWithButton(
@@ -92,6 +91,8 @@ class _HomeProfileState extends State<HomeProfile> {
                   buttonText: "View Details",
                   // 💡 라우트 관리 + 상태관리 필요
                   onPressed: () => Get.toNamed('/my_group_detail')),
+              const SizedBox(height: 16.0),
+
               const GroupStatusList(),
             ],
           ),
@@ -102,10 +103,29 @@ class _HomeProfileState extends State<HomeProfile> {
 }
 
 // Profile Card
-class _ProfileCard extends StatelessWidget {
+class _ProfileCard extends StatefulWidget {
   final String name;
 
   const _ProfileCard({required this.name});
+
+  @override
+  State<_ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<_ProfileCard> {
+  XFile? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  Future getImage(ImageSource imageSource) async {
+    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    final XFile? pickedFile = await _picker.pickImage(source: imageSource);
+    if (pickedFile != null) {
+      setState(() {
+        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
+        // 💡 추후 GET / POST 로직 필요
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,27 +136,42 @@ class _ProfileCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            const CircleAvatar(radius: 30, backgroundColor: Colors.grey),
+            Stack(children: [
+              _image != null
+                  ? CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(_image!.path),
+                      // backgroundColor: Colors.transparent,
+                    )
+                  : const CircleAvatar(
+                      radius: 30, backgroundColor: Colors.grey),
+              Positioned(
+                left: 30,
+                bottom: 20,
+                child: IconButton(
+                  iconSize: 12,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    getImage(ImageSource.gallery);
+                  },
+                  icon: const Icon(Icons.photo_camera),
+                ),
+              )
+            ]),
             const SizedBox(width: 16),
             Expanded(
               // Expanded 추가
               child: Row(
                 children: [
                   Text(
-                    name,
+                    widget.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeSetting()),
-                      );
-                    },
+                    onPressed: () => Get.toNamed('/setting'),
                     icon: const Icon(Icons.settings),
                   ),
                 ],
@@ -295,14 +330,22 @@ class PerformanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fixed card size (width and height)
+    double cardWidth = 176;
+    double cardHeight = 76;
+
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const TimePreferenceRow(),
+          // TIME Preferred
+          const SizedBox(
+            child: TimePreferenceRow(),
+          ),
+          // Alarm Performance
           SizedBox(
-            height: 76,
+            width: cardWidth,
+            height: cardHeight,
             child: Card(
               elevation: 0,
               color: Colors.transparent,
@@ -320,7 +363,7 @@ class PerformanceCard extends StatelessWidget {
                       "Alarm Performance",
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
                       "8 times Recoreded",
                       style: TextStyle(

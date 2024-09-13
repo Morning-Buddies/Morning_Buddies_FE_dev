@@ -109,14 +109,15 @@ class _HomeMainState extends State<HomeMain> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.end, // 하단 정렬
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                        width: 120,
-                        height: 80,
-                        child: Image.asset("assets/images/example.png")),
+                      width: 120,
+                      height: 80,
+                      child: Image.asset("assets/images/example.png"),
+                    ),
                     Text(group.group_name,
+                        overflow: TextOverflow.ellipsis,
                         style:
                             const TextStyle(fontSize: 8, color: Colors.black)),
                     Text(group.wake_up_time,

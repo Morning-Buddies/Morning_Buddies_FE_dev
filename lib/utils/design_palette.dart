@@ -8,6 +8,7 @@ class ColorStyles extends Color {
   static const Color orange = Color(0xFFfebf78);
   static const Color secondaryOrange = Color(0xFFff7d29);
   static const Color btnGrey = Color(0xFFABABB5);
+  static const Color lightGray = Color(0xFFEFEFF0);
 }
 
 
