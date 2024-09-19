@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
@@ -15,8 +16,10 @@ class HomeCreate extends StatefulWidget {
 }
 
 class _HomeCreateState extends State<HomeCreate> {
-  XFile? _image;
+  XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  late CroppedFile _croppedFile;
+
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   // TimePicker 관련 변수
@@ -26,11 +29,39 @@ class _HomeCreateState extends State<HomeCreate> {
 
   Future getImage(ImageSource imageSource) async {
     //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
-    final XFile? pickedFile = await _picker.pickImage(source: imageSource);
-    if (pickedFile != null) {
-      setState(() {
-        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
-      });
+    final XFile? imageFile = await _picker.pickImage(source: imageSource);
+    if (imageFile != null) {
+      _imageFile = imageFile;
+      cropImage();
+    }
+  }
+
+  Future<void> cropImage() async {
+    if (_imageFile != null) {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: _imageFile!.path,
+        compressFormat: ImageCompressFormat.jpg, // 저장할 이미지 확장자(jpg/png)
+        compressQuality: 100, // 저장할 이미지의 퀄리티
+        uiSettings: [
+          // 안드로이드 UI 설정
+          AndroidUiSettings(
+              toolbarTitle: '이미지 자르기/회전하기', // 타이틀바 제목
+              toolbarColor: ColorStyles.secondaryOrange, // 타이틀바 배경색
+              toolbarWidgetColor: Colors.white, // 타이틀바 단추색
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio:
+                  false), // 고정 값으로 자르기 (기본값 : 사용안함) => 이걸 사용하면 원하는 width, width 넓이로 사용 가능
+          // iOS UI 설정
+          IOSUiSettings(
+            title: '이미지 자르기/회전하기', // 보기 컨트롤러의 맨 위에 나타나는 제목
+          ),
+        ],
+      );
+      if (croppedFile != null) {
+        setState(() {
+          _croppedFile = croppedFile;
+        });
+      }
     }
   }
 
@@ -109,17 +140,21 @@ class _HomeCreateState extends State<HomeCreate> {
   }
 
   Widget _buildPhotoArea() {
-    return _image != null
+    return _imageFile != null
         ? Stack(children: [
-            IconButton(
-                onPressed: () {
-                  getImage(ImageSource.gallery);
-                },
-                icon: const Icon(Icons.photo_camera_back_sharp)),
             SizedBox(
-              width: 356,
-              height: 128,
-              child: Image.file(File(_image!.path)),
+              child: Image.file(
+                File(_croppedFile.path),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                  onPressed: () {
+                    getImage(ImageSource.gallery);
+                  },
+                  icon: const Icon(Icons.photo_camera_back_sharp)),
             ),
           ])
         : Container(
