@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
+import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/chat/group_chat_list_page.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
@@ -15,6 +16,7 @@ import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/service/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
+// import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +58,7 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: '/subscription_screen',
             page: () => const SubscriptionScreen()),
+        GetPage(name: '/game_start', page: () => const GameStart()),
       ],
     );
   }
