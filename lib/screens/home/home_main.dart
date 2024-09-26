@@ -48,7 +48,7 @@ class _HomeMainState extends State<HomeMain> {
           if (_groupinfoController.getResponse.isEmpty) {
             return const CircularProgressIndicator(); // 로딩 표시
           } else {
-            return ListView(
+            return Column(
               children: [
                 const SizedBox(height: 4),
                 Container(
@@ -56,29 +56,24 @@ class _HomeMainState extends State<HomeMain> {
                   height: 200,
                   decoration: const BoxDecoration(color: Colors.grey),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      SectionWithButton(
-                        title: "Hot Groups",
-                        buttonText: "more",
-                        onPressed: () {},
-                      ),
-                      _buildGroupList(_groupinfoController.getResponse),
-                      SectionWithButton(
-                        title: "Early Morning Wakers",
-                        buttonText: "more",
-                        onPressed: () {},
-                      ),
-                      _buildGroupList(_groupinfoController.getResponse),
-                      SectionWithButton(
-                        title: "Wake Like an Owl",
-                        buttonText: "more",
-                        onPressed: () {},
-                      ),
-                      _buildGroupList(_groupinfoController.getResponse),
-                    ],
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: 3, // 섹션의 개수를 지정
+                    itemBuilder: (context, sectionIndex) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            SectionWithButton(
+                              title: _getSectionTitle(sectionIndex),
+                              buttonText: "more",
+                              onPressed: () {},
+                            ),
+                            _buildGroupList(_groupinfoController.getResponse),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -87,6 +82,19 @@ class _HomeMainState extends State<HomeMain> {
         }),
       ),
     );
+  }
+
+  String _getSectionTitle(int sectionIndex) {
+    switch (sectionIndex) {
+      case 0:
+        return "Hot Groups";
+      case 1:
+        return "Early Morning Wakers";
+      case 2:
+        return "Wake Like an Owl";
+      default:
+        return "";
+    }
   }
 
   Widget _buildGroupList(List<GroupInfoStatus> groupData) {

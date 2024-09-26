@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/models/groupinfo_controller.dart';
+import 'package:morning_buddies/utils/design_palette.dart';
 
 class HomeGroupDetail extends StatefulWidget {
   const HomeGroupDetail({super.key});
@@ -76,7 +77,7 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Divider(),
             const SizedBox(height: 4),
@@ -90,12 +91,24 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    groupData.group_name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        groupData.group_name,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (isJoined)
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.more_horiz,
+                              color: ColorStyles.orange),
+                          onPressed: _showOptionsMenu,
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -152,15 +165,7 @@ class _HomeGroupDetailState extends State<HomeGroupDetail> {
                     ],
                   ),
                   const SizedBox(height: 36),
-                  if (isJoined)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.black),
-                        onPressed: _showOptionsMenu,
-                      ),
-                    )
-                  else
+                  if (!isJoined)
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
