@@ -130,10 +130,10 @@ class JigsawWidgetState extends State<JigsawWidget> {
   }
 
   // // Inside the method that processes each puzzle piece
-  // void onPiecePlaced() {
-  //   // After placing a piece correctly
-  //   // checkPuzzleCompletion();
-  // }
+  void onPiecePlaced() {
+    // After placing a piece correctly
+    checkPuzzleCompletion();
+  }
 
   Future<ui.Image?> _getImageFromWidget() async {
     // await Future.delayed(Duration.zero); // Give time for paint completion
@@ -256,7 +256,6 @@ class JigsawWidgetState extends State<JigsawWidget> {
     blocksNotifier.value.shuffle();
     // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
     blocksNotifier.notifyListeners();
-    setState(() {});
   }
 
   @override
@@ -294,7 +293,7 @@ class JigsawWidgetState extends State<JigsawWidget> {
                       if (_index == null) {
                         _carouselController?.nextPage(
                             duration: const Duration(microseconds: 600));
-                        setState(() {});
+                        // setState(() {});
                       }
                     },
                     onPointerMove: (event) {
@@ -322,8 +321,7 @@ class JigsawWidgetState extends State<JigsawWidget> {
                         blocksNotifier.notifyListeners();
                         widget.callbackSuccess?.call();
 
-                        // Call checkPuzzleCompletion when a piece is successfully placed
-                        // checkPuzzleCompletion();
+                        checkPuzzleCompletion();
                       }
                     },
                     child: Stack(
@@ -357,8 +355,12 @@ class JigsawWidgetState extends State<JigsawWidget> {
                                         return Positioned(
                                           left: map.offset.dx,
                                           top: map.offset.dy,
-                                          child: Container(
-                                            child: map.jigsawBlockWidget,
+                                          // 💡 RepaintBoundary 추가하여 리빌드 최적화
+                                          // 각 조각이 개별적으로 리빌드될 수 있도록 RepaintBoundary를 추가합니다.
+                                          child: RepaintBoundary(
+                                            child: Container(
+                                              child: map.jigsawBlockWidget,
+                                            ),
                                           ),
                                         );
                                       },
@@ -372,21 +374,35 @@ class JigsawWidgetState extends State<JigsawWidget> {
                                           child: Offstage(
                                             offstage: !(_index == map.key),
                                             child: GestureDetector(
-                                              onTapDown: (details) {
+                                              onPanStart: (details) {
                                                 if (map.value.jigsawBlockWidget
                                                     .imageBox.isDone) {
                                                   return;
                                                 }
-
+                                                // 💡 드래그 시작 시 setState 최소화
+                                                // 드래그 시작 시 특정 조각만의 상태를 갱신하여 전체적인 리빌드를 피합니다.
                                                 setState(() {
                                                   print(_pos);
                                                   _pos = details.localPosition;
                                                   _index = map.key;
                                                 });
                                               },
-                                              child: Container(
-                                                child:
-                                                    map.value.jigsawBlockWidget,
+                                              onPanUpdate: (details) {
+                                                // 💡 드래그 중인 조각의 상태만 갱신
+                                                // 🚨 Null check operator used on a null value
+                                                if (_index != null) {
+                                                  setState(() {
+                                                    blockNotDone[_index!]
+                                                            .offset +=
+                                                        details.delta;
+                                                  });
+                                                }
+                                              },
+                                              child: RepaintBoundary(
+                                                child: Container(
+                                                  child: map
+                                                      .value.jigsawBlockWidget,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -417,6 +433,8 @@ class JigsawWidgetState extends State<JigsawWidget> {
                       enlargeCenterPage: true,
                       onPageChanged: (index, reason) {
                         _index = index;
+                        // 💡 setState() 최소화
+                        // 캐러셀에서 선택한 조각이 변경될 때 전체 화면을 갱신하지 않도록 하세요.
                         setState(() {});
                       },
                     ),

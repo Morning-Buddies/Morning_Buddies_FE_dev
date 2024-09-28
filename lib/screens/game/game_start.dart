@@ -46,15 +46,15 @@ class _GameStartState extends State<GameStart> {
               onPressed: () {
                 Get.to(
                   JigsawPuzzle(
-                    gridSize: 5,
+                    gridSize: 3,
                     image:
                         const AssetImage('assets/images/final_logo_orange.png'),
                     puzzleKey: puzzleKey,
-                    // onFinished: () {
-                    //   OverlayUtil.showCompletionOverlay(context, () {
-                    //     Get.offAll(() => const HomeBottomNav());
-                    //   });
-                    // },
+                    onFinished: () {
+                      OverlayUtil.showCompletionOverlay(context, () {
+                        Get.offAll(() => const HomeBottomNav());
+                      });
+                    },
                   ),
                 );
               },
