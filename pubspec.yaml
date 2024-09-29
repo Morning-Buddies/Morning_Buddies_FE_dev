@@ -44,7 +44,12 @@ dependencies:
    get: ^4.6.6
    cloud_firestore: ^5.2.1
    image_cropper: ^8.0.2
-   firebase_performance: ^0.10.0+7
+   carousel_slider: ^5.0.0
+   image: ^4.2.0
+   web_socket_channel: ^3.0.1
+   flutter_local_notifications: ^17.2.2
+   permission_handler: ^11.3.1
+   timezone: ^0.9.4
 
 dev_dependencies:
    flutter_test:

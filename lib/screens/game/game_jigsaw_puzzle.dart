@@ -1,128 +1,718 @@
-// import 'package:flame/flame.dart';
+// ignore_for_file: public_member_api_docs
+
+import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/get.dart';
 import 'package:image/image.dart' as ui;
-import 'dart:math' as math;
+import 'package:morning_buddies/screens/game/game_error.dart';
+import 'package:morning_buddies/screens/game/game_overlay_util.dart';
+import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 
-class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+class JigsawPuzzle extends StatefulWidget {
+  const JigsawPuzzle({
+    Key? key,
+    required this.gridSize,
+    required this.image,
+    required this.puzzleKey,
+    this.onFinished,
+    this.onBlockSuccess,
+    this.outlineCanvas = true,
+    this.autoStart = false,
+    this.snapSensitivity = .5,
+  }) : super(key: key);
+
+  final int gridSize;
+  final Function()? onFinished;
+  final Function()? onBlockSuccess;
+  final ImageProvider image;
+  final bool autoStart;
+  final bool outlineCanvas;
+  final double snapSensitivity;
+  final GlobalKey<JigsawWidgetState> puzzleKey;
 
   @override
-  State<GamePage> createState() => _GamePageState();
+  _JigsawPuzzleState createState() => _JigsawPuzzleState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _JigsawPuzzleState extends State<JigsawPuzzle> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.puzzleKey.currentState?.generate();
+    });
+  }
+
+  void onPuzzleComplete() {
+    // Call the overlay utility to show the completion dialog
+    OverlayUtil.showCompletionOverlay(context, () {
+      Get.offAll(() => const HomeBottomNav());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // ignore: avoid_unnecessary_containers
-      body: Container(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(10),
-                decoration: BoxDecoration(border: Border.all(width: 2)),
-                child: const JigsawPuzzle(
-                  // 퍼즐 이미지 세팅용 Container
-
-                  child: Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Image(
-                      fit: BoxFit.fitWidth,
-                      image: AssetImage(
-                          'assets/images/main_logo.png'), // 여기에 생성형 AI로 만든 이미지 들어가야 함
-                    ),
-                  ),
-                ),
-              )
-            ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 16),
+        JigsawWidget(
+          callbackFinish: () {
+            if (widget.onFinished != null) {
+              // onPuzzleComplete();
+            }
+          },
+          callbackSuccess: () {
+            if (widget.onBlockSuccess != null) {}
+          },
+          key: widget.puzzleKey,
+          gridSize: widget.gridSize,
+          snapSensitivity: widget.snapSensitivity,
+          outlineCanvas: widget.outlineCanvas,
+          child: Image(
+            fit: BoxFit.contain,
+            image: widget.image,
           ),
         ),
-      ),
+      ],
     );
   }
 }
 
-// 퍼즐 stf위젯
-class JigsawPuzzle extends StatefulWidget {
-  @override
-  final Key? key;
+class JigsawWidget extends StatefulWidget {
+  const JigsawWidget({
+    Key? key,
+    required this.gridSize,
+    required this.snapSensitivity,
+    required this.child,
+    this.callbackFinish,
+    this.callbackSuccess,
+    this.outlineCanvas = true,
+  }) : super(key: key);
+
   final Widget child;
-  const JigsawPuzzle({this.key, required this.child}) : super(key: key);
+  final Function()? callbackSuccess;
+  final Function()? callbackFinish;
+  final int gridSize;
+  final bool outlineCanvas;
+  final double snapSensitivity;
 
   @override
-  State<JigsawPuzzle> createState() => _JigsawPuzzleState();
+  JigsawWidgetState createState() => JigsawWidgetState();
 }
 
-class _JigsawPuzzleState extends State<JigsawPuzzle> {
-  // GlobalKey : 특정 위젯 동적 업데이트 or 위젯 상태 직접적 제어시 사용 ex)스크롤 위치 조정, 애니메이션 트리거
-  // 나중에 필요시 getX 상태적용 필요해보임
+class JigsawWidgetState extends State<JigsawWidget> {
   final GlobalKey _globalKey = GlobalKey();
   ui.Image? fullImage;
   Size? size;
 
-  List<List<BlockClass>> images = [];
+  List<List<BlockClass>> images = <List<BlockClass>>[];
+  ValueNotifier<List<BlockClass>> blocksNotifier =
+      ValueNotifier<List<BlockClass>>(<BlockClass>[]);
+  CarouselSliderController? _carouselController;
 
-  _getImageFromWidget() async {
-    if (_globalKey.currentContext != null) {
-      RenderRepaintBoundary boundary = _globalKey.currentContext!
-          .findRenderObject() as RenderRepaintBoundary;
+  Offset _pos = Offset.zero;
+  int? _index;
+
+  void checkPuzzleCompletion() {
+    final allDone = blocksNotifier.value
+        .every((block) => block.jigsawBlockWidget.imageBox.isDone);
+
+    if (allDone) {
+      widget.callbackFinish
+          ?.call(); // Trigger the finish callback only when all pieces are done
     }
   }
 
-  // CJ🙋🏻‍♀️ 이 비동기 함수 로직 이해 안가는 부분 많아서 추가 공부 필요
-  Future<void> generateJigsawImg() async {
-    List<List<BlockClass>> images = [];
+  // // Inside the method that processes each puzzle piece
+  void onPiecePlaced() {
+    // After placing a piece correctly
+    checkPuzzleCompletion();
+  }
+
+  Future<ui.Image?> _getImageFromWidget() async {
+    // await Future.delayed(Duration.zero); // Give time for paint completion
+    final RenderRepaintBoundary boundary =
+        _globalKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+
+    if (boundary.debugNeedsPaint) {
+      // Widget still needs to paint, delay the capture
+      await Future.delayed(const Duration(milliseconds: 100));
+      return _getImageFromWidget(); // Retry after a delay
+    }
+
+    size = boundary.size;
+    final img = await boundary.toImage();
+    final byteData = await img.toByteData(format: ImageByteFormat.png);
+    final pngBytes = byteData?.buffer.asUint8List();
+
+    if (pngBytes == null) {
+      throw InvalidImageException();
+    }
+
+    return ui.decodeImage(Uint8List.fromList(pngBytes));
+  }
+
+  void reset() {
+    images.clear();
+    blocksNotifier = ValueNotifier<List<BlockClass>>(<BlockClass>[]);
+    // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+    blocksNotifier.notifyListeners();
+    setState(() {});
+  }
+
+  Future<void> generate() async {
+    images = [[]];
 
     fullImage ??= await _getImageFromWidget();
 
-    int xSplitCount = 2;
-    int ySplitCount = 2;
-    double widthPerBlock = fullImage!.width / xSplitCount;
-    double heightPerBlock = fullImage!.height / ySplitCount;
+    final int xSplitCount = widget.gridSize;
+    final int ySplitCount = widget.gridSize;
+
+    final double widthPerBlock = fullImage!.width / xSplitCount;
+    final double heightPerBlock = fullImage!.height / ySplitCount;
 
     for (var y = 0; y < ySplitCount; y++) {
-      List<BlockClass> tempImages = [];
+      final tempImages = <BlockClass>[];
+
       images.add(tempImages);
       for (var x = 0; x < xSplitCount; x++) {
-        int randomPosRow = math.Random().nextInt(2) % 2 == 0 ? 1 : -1;
-        int randomPosCol = math.Random().nextInt(2) % 2 == 0 ? 1 : -1;
+        final int randomPosRow = math.Random().nextInt(2).isEven ? 1 : -1;
+        final int randomPosCol = math.Random().nextInt(2).isEven ? 1 : -1;
 
         Offset offsetCenter = Offset(widthPerBlock / 2, heightPerBlock / 2);
 
-        // CJ🙋🏻‍♀️ 랜덤한 jigsaw in or out 포인터를 만들자는데.. 뭔말이야 (1강 10:07)
+        final ClassJigsawPos jigsawPosSide = ClassJigsawPos(
+          bottom: y == ySplitCount - 1 ? 0 : randomPosCol,
+          left: x == 0
+              ? 0
+              : -images[y][x - 1].jigsawBlockWidget.imageBox.posSide.right,
+          right: x == xSplitCount - 1 ? 0 : randomPosRow,
+          top: y == 0
+              ? 0
+              : -images[y - 1][x].jigsawBlockWidget.imageBox.posSide.bottom,
+        );
+
+        double xAxis = widthPerBlock * x;
+        double yAxis = heightPerBlock * y;
+
+        final double minSize = math.min(widthPerBlock, heightPerBlock) / 15 * 4;
+
+        offsetCenter = Offset(
+          (widthPerBlock / 2) + (jigsawPosSide.left == 1 ? minSize : 0),
+          (heightPerBlock / 2) + (jigsawPosSide.top == 1 ? minSize : 0),
+        );
+
+        xAxis -= jigsawPosSide.left == 1 ? minSize : 0;
+        yAxis -= jigsawPosSide.top == 1 ? minSize : 0;
+
+        final double widthPerBlockTemp = widthPerBlock +
+            (jigsawPosSide.left == 1 ? minSize : 0) +
+            (jigsawPosSide.right == 1 ? minSize : 0);
+        final double heightPerBlockTemp = heightPerBlock +
+            (jigsawPosSide.top == 1 ? minSize : 0) +
+            (jigsawPosSide.bottom == 1 ? minSize : 0);
+
+        final ui.Image temp = ui.copyCrop(
+          fullImage!,
+          x: xAxis.round(),
+          y: yAxis.round(),
+          width: widthPerBlockTemp.round(),
+          height: heightPerBlockTemp.round(),
+        );
+
+        final Offset offset = Offset(size!.width / 2 - widthPerBlockTemp / 2,
+            size!.height / 2 - heightPerBlockTemp / 2);
+
+        final ImageBox imageBox = ImageBox(
+          image: Image.memory(
+            Uint8List.fromList(ui.encodePng(temp)),
+            fit: BoxFit.contain,
+          ),
+          isDone: false,
+          offsetCenter: offsetCenter,
+          posSide: jigsawPosSide,
+          radiusPoint: minSize,
+          size: Size(widthPerBlockTemp, heightPerBlockTemp),
+        );
+
+        images[y].add(
+          BlockClass(
+              jigsawBlockWidget: JigsawBlockWidget(
+                imageBox: imageBox,
+              ),
+              offset: offset,
+              offsetDefault: Offset(xAxis, yAxis)),
+        );
       }
     }
+
+    blocksNotifier.value = images.expand((image) => image).toList();
+    blocksNotifier.value.shuffle();
+    // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+    blocksNotifier.notifyListeners();
   }
 
   @override
   void initState() {
-    // 이미지를 퍼즐처럼 스플릿 하기 위한 용도
+    _carouselController = CarouselSliderController();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    Size sizeBox = MediaQuery.of(context).size;
-    return SizedBox(
-      height: sizeBox.width,
-      child: Stack(
-        children: [
-          // RepainBoundary : 복잡한 레이아웃 or 그래픽 때문에 높은 렌더링 비용을 예상할 때, 성능 최적화 목적
-          RepaintBoundary(
-            key: _globalKey,
-            // ignore: sized_box_for_whitespace
-            child: Container(
-              height: sizeBox.width,
-              width: sizeBox.height,
-              child: widget.child,
-            ),
-          )
-        ],
+    return ValueListenableBuilder(
+        valueListenable: blocksNotifier,
+        builder: (context, List<BlockClass> blocks, child) {
+          final List<BlockClass> blockNotDone = blocks
+              .where((block) => !block.jigsawBlockWidget.imageBox.isDone)
+              .toList();
+          final List<BlockClass> blockDone = blocks
+              .where((block) => block.jigsawBlockWidget.imageBox.isDone)
+              .toList();
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Listener(
+                    onPointerUp: (event) {
+                      if (blockNotDone.isEmpty) {
+                        reset();
+                        widget.callbackFinish?.call();
+                      }
+
+                      if (_index == null) {
+                        _carouselController?.nextPage(
+                            duration: const Duration(microseconds: 600));
+                        // setState(() {});
+                      }
+                    },
+                    onPointerMove: (event) {
+                      if (_index == null) return;
+                      if (blockNotDone.isEmpty) return;
+
+                      final Offset offset = event.localPosition - _pos;
+                      blockNotDone[_index!].offset = offset;
+
+                      final sensitivity = widget.snapSensitivity;
+                      final distanceThreshold = math.max(5, sensitivity * 100);
+
+                      if ((blockNotDone[_index!].offset -
+                                  blockNotDone[_index!].offsetDefault)
+                              .distance <
+                          distanceThreshold) {
+                        blockNotDone[_index!]
+                            .jigsawBlockWidget
+                            .imageBox
+                            .isDone = true;
+                        blockNotDone[_index!].offset =
+                            blockNotDone[_index!].offsetDefault;
+
+                        _index = null;
+                        blocksNotifier.notifyListeners();
+                        widget.callbackSuccess?.call();
+
+                        checkPuzzleCompletion();
+                      }
+                    },
+                    child: Stack(
+                      children: [
+                        if (blocks.isEmpty) ...[
+                          RepaintBoundary(
+                            key: _globalKey,
+                            child: SizedBox(
+                              height: double.maxFinite,
+                              width: double.maxFinite,
+                              child: widget.child,
+                            ),
+                          )
+                        ],
+                        Offstage(
+                          offstage: blocks.isEmpty,
+                          child: Container(
+                            color: Colors.white,
+                            width: size?.width,
+                            height: size?.height,
+                            child: CustomPaint(
+                              painter: JigsawPainterBackground(
+                                blocks,
+                                outlineCanvas: widget.outlineCanvas,
+                              ),
+                              child: Stack(
+                                children: [
+                                  if (blockDone.isNotEmpty)
+                                    ...blockDone.map(
+                                      (map) {
+                                        return Positioned(
+                                          left: map.offset.dx,
+                                          top: map.offset.dy,
+                                          // 💡 RepaintBoundary 추가하여 리빌드 최적화
+                                          // 각 조각이 개별적으로 리빌드될 수 있도록 RepaintBoundary를 추가합니다.
+                                          child: RepaintBoundary(
+                                            child: Container(
+                                              child: map.jigsawBlockWidget,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  if (blockNotDone.isNotEmpty)
+                                    ...blockNotDone.asMap().entries.map(
+                                      (map) {
+                                        return Positioned(
+                                          left: map.value.offset.dx,
+                                          top: map.value.offset.dy,
+                                          child: Offstage(
+                                            offstage: !(_index == map.key),
+                                            child: GestureDetector(
+                                              onPanStart: (details) {
+                                                if (map.value.jigsawBlockWidget
+                                                    .imageBox.isDone) {
+                                                  return;
+                                                }
+                                                // 💡 드래그 시작 시 setState 최소화
+                                                // 드래그 시작 시 특정 조각만의 상태를 갱신하여 전체적인 리빌드를 피합니다.
+                                                setState(() {
+                                                  print(_pos);
+                                                  _pos = details.localPosition;
+                                                  _index = map.key;
+                                                });
+                                              },
+                                              onPanUpdate: (details) {
+                                                // 💡 드래그 중인 조각의 상태만 갱신
+                                                // 🚨 Null check operator used on a null value
+                                                if (_index != null) {
+                                                  setState(() {
+                                                    blockNotDone[_index!]
+                                                            .offset +=
+                                                        details.delta;
+                                                  });
+                                                }
+                                              },
+                                              child: RepaintBoundary(
+                                                child: Container(
+                                                  child: map
+                                                      .value.jigsawBlockWidget,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                  color: Colors.white,
+                  height: 120,
+                  child: CarouselSlider(
+                    carouselController: _carouselController,
+                    //  Caruosel에서 선택한 퍼즐 조각을 렌더링
+                    options: CarouselOptions(
+                      initialPage: _index ?? 0,
+                      height: 80,
+                      aspectRatio: 1,
+                      viewportFraction: 0.3,
+                      enlargeCenterPage: true,
+                      onPageChanged: (index, reason) {
+                        _index = index;
+                        // 💡 setState() 최소화
+                        // 캐러셀에서 선택한 조각이 변경될 때 전체 화면을 갱신하지 않도록 하세요.
+                        setState(() {});
+                      },
+                    ),
+                    items: blockNotDone.map((block) {
+                      final Size sizeBlock =
+                          block.jigsawBlockWidget.imageBox.size;
+                      return FittedBox(
+                        child: SizedBox(
+                          width: sizeBlock.width,
+                          height: sizeBlock.height,
+                          child: block.jigsawBlockWidget,
+                        ),
+                      );
+                    }).toList(),
+                  ))
+            ],
+          );
+        });
+  }
+}
+
+class JigsawPainterBackground extends CustomPainter {
+  JigsawPainterBackground(this.blocks, {required this.outlineCanvas});
+
+  List<BlockClass> blocks;
+  bool outlineCanvas;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..style = outlineCanvas ? PaintingStyle.stroke : PaintingStyle.fill
+      ..color = Colors.black12
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    final Path path = Path();
+
+    for (var element in blocks) {
+      final Path pathTemp = getPiecePath(
+        element.jigsawBlockWidget.imageBox.size,
+        element.jigsawBlockWidget.imageBox.radiusPoint,
+        element.jigsawBlockWidget.imageBox.offsetCenter,
+        element.jigsawBlockWidget.imageBox.posSide,
+      );
+
+      path.addPath(pathTemp, element.offsetDefault);
+    }
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class BlockClass {
+  BlockClass({
+    required this.offset,
+    required this.jigsawBlockWidget,
+    required this.offsetDefault,
+  });
+
+  Offset offset;
+  Offset offsetDefault;
+  JigsawBlockWidget jigsawBlockWidget;
+}
+
+class ImageBox {
+  ImageBox({
+    required this.image,
+    required this.posSide,
+    required this.isDone,
+    required this.offsetCenter,
+    required this.radiusPoint,
+    required this.size,
+  });
+
+  Widget image;
+  ClassJigsawPos posSide;
+  Offset offsetCenter;
+  Size size;
+  double radiusPoint;
+  bool isDone;
+}
+
+class ClassJigsawPos {
+  ClassJigsawPos({
+    required this.top,
+    required this.bottom,
+    required this.left,
+    required this.right,
+  });
+
+  int top, bottom, left, right;
+}
+
+class JigsawBlockWidget extends StatefulWidget {
+  const JigsawBlockWidget({Key? key, required this.imageBox}) : super(key: key);
+
+  final ImageBox imageBox;
+
+  @override
+  _JigsawBlockWidgetState createState() => _JigsawBlockWidgetState();
+}
+
+class _JigsawBlockWidgetState extends State<JigsawBlockWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return ClipPath(
+      clipper: PuzzlePieceClipper(imageBox: widget.imageBox),
+      child: CustomPaint(
+        foregroundPainter: JigsawBlokPainter(imageBox: widget.imageBox),
+        child: widget.imageBox.image,
       ),
     );
   }
 }
 
-class BlockClass {}
+class JigsawBlokPainter extends CustomPainter {
+  JigsawBlokPainter({
+    required this.imageBox,
+  });
+
+  ImageBox imageBox;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = imageBox.isDone ? Colors.white.withOpacity(0.2) : Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    canvas.drawPath(
+        getPiecePath(size, imageBox.radiusPoint, imageBox.offsetCenter,
+            imageBox.posSide),
+        paint);
+
+    if (imageBox.isDone) {
+      final Paint paintDone = Paint()
+        ..color = Colors.white.withOpacity(0.2)
+        ..style = PaintingStyle.fill
+        ..strokeWidth = 2;
+      canvas.drawPath(
+          getPiecePath(size, imageBox.radiusPoint, imageBox.offsetCenter,
+              imageBox.posSide),
+          paintDone);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class PuzzlePieceClipper extends CustomClipper<Path> {
+  PuzzlePieceClipper({
+    required this.imageBox,
+  });
+
+  ImageBox imageBox;
+
+  @override
+  Path getClip(Size size) {
+    return getPiecePath(
+        size, imageBox.radiusPoint, imageBox.offsetCenter, imageBox.posSide);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
+}
+
+Path getPiecePath(
+  Size size,
+  double radiusPoint,
+  Offset offsetCenter,
+  ClassJigsawPos posSide,
+) {
+  final Path path = Path();
+
+  Offset topLeft = const Offset(0, 0);
+  Offset topRight = Offset(size.width, 0);
+  Offset bottomLeft = Offset(0, size.height);
+  Offset bottomRight = Offset(size.width, size.height);
+
+  topLeft = Offset(posSide.left > 0 ? radiusPoint : 0,
+          (posSide.top > 0) ? radiusPoint : 0) +
+      topLeft;
+  topRight = Offset(posSide.right > 0 ? -radiusPoint : 0,
+          (posSide.top > 0) ? radiusPoint : 0) +
+      topRight;
+  bottomRight = Offset(posSide.right > 0 ? -radiusPoint : 0,
+          (posSide.bottom > 0) ? -radiusPoint : 0) +
+      bottomRight;
+  bottomLeft = Offset(posSide.left > 0 ? radiusPoint : 0,
+          (posSide.bottom > 0) ? -radiusPoint : 0) +
+      bottomLeft;
+
+  final double topMiddle = posSide.top == 0
+      ? topRight.dy
+      : (posSide.top > 0
+          ? topRight.dy - radiusPoint
+          : topRight.dy + radiusPoint);
+
+  final double bottomMiddle = posSide.bottom == 0
+      ? bottomRight.dy
+      : (posSide.bottom > 0
+          ? bottomRight.dy + radiusPoint
+          : bottomRight.dy - radiusPoint);
+
+  final double leftMiddle = posSide.left == 0
+      ? topLeft.dx
+      : (posSide.left > 0
+          ? topLeft.dx - radiusPoint
+          : topLeft.dx + radiusPoint);
+
+  final double rightMiddle = posSide.right == 0
+      ? topRight.dx
+      : (posSide.right > 0
+          ? topRight.dx + radiusPoint
+          : topRight.dx - radiusPoint);
+
+  path.moveTo(topLeft.dx, topLeft.dy);
+
+  if (posSide.top != 0) {
+    path.extendWithPath(
+      calculatePoint(Axis.horizontal, topLeft.dy,
+          Offset(offsetCenter.dx, topMiddle), radiusPoint),
+      Offset.zero,
+    );
+  }
+  path.lineTo(topRight.dx, topRight.dy);
+
+  if (posSide.right != 0) {
+    path.extendWithPath(
+        calculatePoint(Axis.vertical, topRight.dx,
+            Offset(rightMiddle, offsetCenter.dy), radiusPoint),
+        Offset.zero);
+  }
+  path.lineTo(bottomRight.dx, bottomRight.dy);
+
+  if (posSide.bottom != 0) {
+    path.extendWithPath(
+        calculatePoint(Axis.horizontal, bottomRight.dy,
+            Offset(offsetCenter.dx, bottomMiddle), -radiusPoint),
+        Offset.zero);
+  }
+  path.lineTo(bottomLeft.dx, bottomLeft.dy);
+
+  if (posSide.left != 0) {
+    path.extendWithPath(
+        calculatePoint(Axis.vertical, bottomLeft.dx,
+            Offset(leftMiddle, offsetCenter.dy), -radiusPoint),
+        Offset.zero);
+  }
+  path.lineTo(topLeft.dx, topLeft.dy);
+
+  path.close();
+
+  return path;
+}
+
+Path calculatePoint(
+  Axis axis,
+  double fromPoint,
+  Offset point,
+  double radiusPoint,
+) {
+  final Path path = Path();
+
+  if (axis == Axis.horizontal) {
+    path.moveTo(point.dx - radiusPoint / 2, fromPoint);
+    path.lineTo(point.dx - radiusPoint / 2, point.dy);
+    path.lineTo(point.dx + radiusPoint / 2, point.dy);
+    path.lineTo(point.dx + radiusPoint / 2, fromPoint);
+  } else if (axis == Axis.vertical) {
+    path.moveTo(fromPoint, point.dy - radiusPoint / 2);
+    path.lineTo(point.dx, point.dy - radiusPoint / 2);
+    path.lineTo(point.dx, point.dy + radiusPoint / 2);
+    path.lineTo(fromPoint, point.dy + radiusPoint / 2);
+  }
+
+  return path;
+}

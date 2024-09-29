@@ -6,7 +6,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
-import 'package:morning_buddies/widgets/dropdown/number_dropdown.dart';
+import 'package:morning_buddies/widgets/dropdown/member_num_dropdown.dart';
 
 class HomeCreate extends StatefulWidget {
   const HomeCreate({super.key});

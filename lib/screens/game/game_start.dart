@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:morning_buddies/screens/game/game_jigsaw_puzzle.dart';
+import 'package:morning_buddies/screens/game/game_overlay_util.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
+import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 
 class GameStart extends StatefulWidget {
   const GameStart({super.key});
@@ -9,6 +13,8 @@ class GameStart extends StatefulWidget {
 }
 
 class _GameStartState extends State<GameStart> {
+  final puzzleKey = GlobalKey<JigsawWidgetState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +44,19 @@ class _GameStartState extends State<GameStart> {
                   foregroundColor: Colors.white,
                   backgroundColor: ColorStyles.secondaryOrange),
               onPressed: () {
-                Navigator.pushNamed(context, "/game_puzzle");
+                Get.to(
+                  JigsawPuzzle(
+                    gridSize: 3,
+                    image:
+                        const AssetImage('assets/images/final_logo_orange.png'),
+                    puzzleKey: puzzleKey,
+                    onFinished: () {
+                      OverlayUtil.showCompletionOverlay(context, () {
+                        Get.offAll(() => const HomeBottomNav());
+                      });
+                    },
+                  ),
+                );
               },
               child: const Text(
                 "Start",
