@@ -1,7 +1,4 @@
-// 시간 기반 동작( 특정 시간에 도달시 콜백 실행)
-// Timer 유지 관리
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/utils/time_utils.dart';
 
@@ -19,6 +16,16 @@ class TimeService {
     } else {
       _timer = Timer(durationUntilTarget, onTimeReached);
     }
+  }
+
+  // 새로운 메서드: 목표 시간이 현재와 동일한지 확인
+  bool isTargetTime(DateTime targetTime) {
+    DateTime now = DateTime.now();
+    return now.year == targetTime.year &&
+        now.month == targetTime.month &&
+        now.day == targetTime.day &&
+        now.hour == targetTime.hour &&
+        now.minute == targetTime.minute;
   }
 
   void dispose() {

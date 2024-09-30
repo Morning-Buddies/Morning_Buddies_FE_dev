@@ -64,7 +64,7 @@ class _JigsawPuzzleState extends State<JigsawPuzzle> {
         JigsawWidget(
           callbackFinish: () {
             if (widget.onFinished != null) {
-              // onPuzzleComplete();
+              onPuzzleComplete();
             }
           },
           callbackSuccess: () {

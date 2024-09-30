@@ -6,23 +6,29 @@ class AlertGameService {
   final TimeService _timeService = TimeService();
   bool _isGameCompleted = false; // Completion flag
 
-  String targetTime = "14:27";
+  String targetTime = "19:16:00";
 
   DateTime convertToDateTime(String targetTime) {
     DateTime now = DateTime.now();
     List<String> timeParts = targetTime.split(":");
     int hour = int.parse(timeParts[0]);
     int minute = int.parse(timeParts[1]);
+    int second = timeParts.length > 2 ? int.parse(timeParts[2]) : 0; // 초 부분 처리
 
-    return DateTime(now.year, now.month, now.day, hour, minute);
+    return DateTime(now.year, now.month, now.day, hour, minute, second);
   }
 
   late DateTime convertedTargetTime = convertToDateTime(targetTime);
 
   void doAlertAction() {
     if (!_isGameCompleted) {
-      // Only navigate if the game is not completed
-      _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
+      DateTime now = DateTime.now();
+
+      // 목표 시간이 현재와 일치하거나 이후인 경우에만 실행
+      if (_timeService.isTargetTime(convertedTargetTime) ||
+          now.isBefore(convertedTargetTime)) {
+        _timeService.alarmAction(convertedTargetTime, _navigateToGameScreen);
+      }
     }
   }
 
@@ -32,5 +38,9 @@ class AlertGameService {
       Get.offAll(const GameStart());
       _isGameCompleted = true; // Set completion flag to true
     }
+  }
+
+  void markGameAsCompleted() {
+    _isGameCompleted = true;
   }
 }
