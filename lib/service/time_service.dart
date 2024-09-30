@@ -25,7 +25,8 @@ class TimeService {
         now.month == targetTime.month &&
         now.day == targetTime.day &&
         now.hour == targetTime.hour &&
-        now.minute == targetTime.minute;
+        now.minute == targetTime.minute &&
+        now.second == targetTime.second;
   }
 
   void dispose() {
