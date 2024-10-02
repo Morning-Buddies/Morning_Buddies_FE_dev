@@ -47,13 +47,6 @@ class _JigsawPuzzleState extends State<JigsawPuzzle> {
     });
   }
 
-  void onPuzzleComplete() {
-    // Call the overlay utility to show the completion dialog
-    OverlayUtil.showCompletionOverlay(context, () {
-      Get.offAll(() => const HomeBottomNav());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -64,7 +57,9 @@ class _JigsawPuzzleState extends State<JigsawPuzzle> {
         JigsawWidget(
           callbackFinish: () {
             if (widget.onFinished != null) {
-              onPuzzleComplete();
+              OverlayUtil.showCompletionOverlay(context, () {
+                Get.offAll(() => const HomeBottomNav());
+              });
             }
           },
           callbackSuccess: () {

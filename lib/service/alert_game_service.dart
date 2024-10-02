@@ -6,7 +6,7 @@ class AlertGameService {
   final TimeService _timeService = TimeService();
   bool _isGameCompleted = false; // Completion flag
 
-  String targetTime = "19:16:00";
+  String targetTime = "16:21:00";
 
   DateTime convertToDateTime(String targetTime) {
     DateTime now = DateTime.now();
