@@ -48,7 +48,7 @@ class _GameStartState extends State<GameStart> {
                   JigsawPuzzle(
                     gridSize: 3,
                     image:
-                        const AssetImage('assets/images/final_logo_orange.png'),
+                        const AssetImage('assets/images/puzzle_ex_image.png'),
                     puzzleKey: puzzleKey,
                     onFinished: () {
                       OverlayUtil.showCompletionOverlay(context, () {

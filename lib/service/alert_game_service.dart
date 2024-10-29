@@ -6,7 +6,8 @@ class AlertGameService {
   final TimeService _timeService = TimeService();
   bool _isGameCompleted = false; // Completion flag
 
-  String targetTime = "16:21:00";
+  // HH : MM : SS 형식의 DATETIME 객체로 받아올 예정
+  String targetTime = "16:50:00";
 
   DateTime convertToDateTime(String targetTime) {
     DateTime now = DateTime.now();

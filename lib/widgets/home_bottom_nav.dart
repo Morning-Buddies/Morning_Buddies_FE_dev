@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_buddies/screens/home/chat/group_chat_list_page.dart';
+import 'package:morning_buddies/screens/home/chat/test_handshake.dart';
 import 'package:morning_buddies/screens/home/home_create.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
 import 'package:morning_buddies/screens/home/home_profile.dart';
@@ -18,7 +19,8 @@ class _HomeBottomNavState extends State<HomeBottomNav> {
   final List<Widget> _pages = [
     const HomeMain(),
     const HomeCreate(),
-    GroupChatListPage(),
+    // GroupChatListPage(),
+    const MyWidget(),
     const HomeProfile(),
   ];
 
