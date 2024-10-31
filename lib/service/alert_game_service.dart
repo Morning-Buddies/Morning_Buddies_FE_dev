@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
-import 'package:morning_buddies/service/time_service.dart';
+import 'package:morning_buddies/utils/time_service.dart';
 
 class AlertGameService {
   final TimeService _timeService = TimeService();
   bool _isGameCompleted = false; // Completion flag
 
   // HH : MM : SS 형식의 DATETIME 객체로 받아올 예정
-  String targetTime = "16:50:00";
+  String targetTime = "12:59:00";
 
   DateTime convertToDateTime(String targetTime) {
     DateTime now = DateTime.now();

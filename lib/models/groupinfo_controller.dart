@@ -43,7 +43,7 @@ class GroupinfoController extends GetxController {
   var query = ''.obs;
   var results = [].obs;
 
-  String baseUrl = dotenv.env["PROJECT_API_KEY"]!;
+  String baseUrl = dotenv.env["MOCKDATA_API_KEY"]!;
 
   @override
   void onInit() {

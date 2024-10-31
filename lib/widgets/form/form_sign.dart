@@ -10,7 +10,6 @@ import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'package:morning_buddies/widgets/dropdown/signup_dropdown.dart';
 import 'dart:async'; // Import for Timer
-import 'package:http/http.dart' as http;
 
 class SignUpForm extends StatefulWidget {
   final Function(int) onProgressChanged;
@@ -78,6 +77,9 @@ class _SignupFormState extends State<SignUpForm> {
   Future<void> _verifyPhoneNumber() async {
     String phoneNumber = _controllers['phone #']!.text;
     String numericPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    if (numericPhoneNumber.startsWith('0')) {
+      numericPhoneNumber = numericPhoneNumber.substring(1);
+    }
     String formattedPhoneNumber = '+82$numericPhoneNumber';
 
     await _authService.verifyPhoneNumber(
@@ -95,6 +97,48 @@ class _SignupFormState extends State<SignUpForm> {
     );
   }
 
+  void sendRegistrationData() async {
+    // null 값 확인 로직
+    String? email = _controllers['e-mail(id)']?.text;
+    String? password = _controllers['password']?.text;
+    String? firstName = _controllers['first name']?.text;
+    String? lastName = _controllers['last name']?.text;
+    String? phoneNumber = _controllers['phone #']?.text;
+    String? hour;
+
+    // 예외 처리로 시간이 올바른 형식인지 확인
+    try {
+      hour = _selectedWakeUpTime!.split(":")[0];
+    } catch (e) {
+      print('시간 형식 오류: $e');
+    }
+
+    // 필수 값이 모두 있는지 확인
+    if (email == null ||
+        password == null ||
+        firstName == null ||
+        lastName == null ||
+        phoneNumber == null ||
+        hour == null) {
+      print('필수 항목 중 하나 이상이 null입니다.');
+      return; // 필요한 경우 함수 종료
+    }
+
+    // 실제 요청
+    try {
+      await _authService.registerUser(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        hour: hour,
+      );
+    } catch (e) {
+      print('회원가입 요청 중 오류 발생: $e');
+    }
+  }
+
   // 인증번호 확인시 회원가입 로직
   Future<void> _signInWithPhoneNumber() async {
     await _authService.signInWithPhoneNumber(
@@ -104,6 +148,9 @@ class _SignupFormState extends State<SignUpForm> {
         _controllers['password']!.text,
         _controllers['last name']!.text,
         _controllers['first name']!.text);
+
+// BE SERVER POST LOGIC
+    sendRegistrationData();
 
     if (mounted) {
       await Get.to(() => const HomeBottomNav());
@@ -302,7 +349,6 @@ class _SignupFormState extends State<SignUpForm> {
                   hintText: 'Enter verification code',
                   onChanged: (value) {},
                 ),
-              // _buildFormField('Verify #', 'Enter verification code', false),
               CustomOutlinedButton(
                 backgroundcolor: ColorStyles.orange,
                 width: 374,

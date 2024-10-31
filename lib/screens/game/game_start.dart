@@ -46,7 +46,7 @@ class _GameStartState extends State<GameStart> {
               onPressed: () {
                 Get.to(
                   JigsawPuzzle(
-                    gridSize: 3,
+                    gridSize: 5,
                     image:
                         const AssetImage('assets/images/puzzle_ex_image.png'),
                     puzzleKey: puzzleKey,
