@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
-import 'package:morning_buddies/service/auth_service.dart';
+import 'package:morning_buddies/models/auth_controller.dart';
+import 'package:morning_buddies/service/firebase_auth_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/utils/validator.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
@@ -25,6 +27,7 @@ class SignUpForm extends StatefulWidget {
 
 class _SignupFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
+  final AuthController authController = Get.find();
 
   Timer? _timer;
   int _secondsRemaining = 120;
@@ -126,7 +129,7 @@ class _SignupFormState extends State<SignUpForm> {
 
     // 실제 요청
     try {
-      await _authService.registerUser(
+      await authController.registerUser(
         email: email,
         password: password,
         firstName: firstName,

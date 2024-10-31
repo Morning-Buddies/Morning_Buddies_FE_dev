@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:morning_buddies/models/auth_controller.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/chat/group_chat_list_page.dart';
@@ -21,6 +22,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  Get.put(AuthController()); // GetX 의존성 주입
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
