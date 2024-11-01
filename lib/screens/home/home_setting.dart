@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/screens/home/password_reset.dart';
-import 'package:morning_buddies/service/auth_service.dart';
+import 'package:morning_buddies/service/firebase_auth_service.dart';
 
 class HomeSetting extends StatefulWidget {
   const HomeSetting({super.key});

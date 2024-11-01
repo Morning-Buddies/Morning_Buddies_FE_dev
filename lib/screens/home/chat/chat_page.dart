@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:morning_buddies/service/auth_service.dart';
+import 'package:morning_buddies/service/firebase_auth_service.dart';
 import 'package:morning_buddies/service/chat_service.dart';
 
 import 'chat_bubble.dart';

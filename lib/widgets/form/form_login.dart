@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:morning_buddies/service/auth_service.dart';
+import 'package:get/get.dart';
+import 'package:morning_buddies/models/auth_controller.dart';
+import 'package:morning_buddies/service/firebase_auth_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';
@@ -13,6 +15,7 @@ class LoginForm extends StatefulWidget {
 
 class _FormTemplateState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+  final AuthController authController = Get.find();
   final TextEditingController controllerId = TextEditingController();
   final TextEditingController controllerPW = TextEditingController();
 
@@ -62,7 +65,12 @@ class _FormTemplateState extends State<LoginForm> {
               // validate 를 통해 빈값 요청이 넘어가지 않도록 하였습니다.
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  // Firebase Login
                   login();
+                  // BE Server Login
+                  final email = controllerId.text.trim();
+                  final password = controllerPW.text.trim();
+                  authController.login(email, password);
                 }
               },
             )
