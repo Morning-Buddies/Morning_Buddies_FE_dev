@@ -5,7 +5,7 @@ class BEUser {
   final String lastName;
   final String preferredWakeupTime;
   final int successGameCount;
-  final List<dynamic> groups;
+  final List groups;
 
   BEUser({
     required this.id,
@@ -26,7 +26,11 @@ class BEUser {
       lastName: json['lastName'] as String,
       preferredWakeupTime: json['preferredWakeupTime'] as String,
       successGameCount: json['successGameCount'] as int,
-      groups: json['groups'] as List<dynamic>, // 빈 배열일 수도 있음
+      groups: json['groups'] is List
+          ? (json['groups'] as List<dynamic>)
+          : json['groups'] is Map
+              ? [json['groups']]
+              : [], // 빈 배열일 수도 있음
     );
   }
 }

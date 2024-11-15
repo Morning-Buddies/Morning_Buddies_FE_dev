@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:morning_buddies/auth/token_manager.dart';
 
 class MyWidget extends StatefulWidget {
   const MyWidget({super.key});
@@ -13,8 +15,7 @@ class MyWidget extends StatefulWidget {
 class _MyWidgetState extends State<MyWidget> {
   final TextEditingController _controller = TextEditingController();
   WebSocket? _socket;
-  String testAddress = dotenv.env["WEB_SOCKET_TEST_ADDRESS"]!;
-  String testToken = dotenv.env["WEB_SOCKET_TEST_TOKEN"]!;
+  String websocketAddress = dotenv.env["WEB_SOCKET_ADDRESS"]!;
 
   @override
   void initState() {
@@ -23,18 +24,26 @@ class _MyWidgetState extends State<MyWidget> {
   }
 
   void connectToWebSocket() async {
+    final accessToken = await TokenManager().getAccessToken();
+
     try {
+      // Retrieve the access token from secure storage
+
+      if (accessToken == null || accessToken.isEmpty) {
+        print("Access token is missing. Unable to connect.");
+        return;
+      }
+
       _socket = await WebSocket.connect(
-        testAddress,
+        "$websocketAddress/1/1",
         headers: {
-          'Authorization': testToken, // 엑세스 토큰 포함
+          'Authorization': 'Bearer $accessToken', // the access token
         },
       );
 
       _socket!.listen(
         (message) {
           setState(() {
-            // 수신한 메시지를 사용하세요.
             print("Received: $message");
           });
         },

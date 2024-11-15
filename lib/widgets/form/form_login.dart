@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/auth_controller.dart';
-import 'package:morning_buddies/service/firebase_auth_service.dart';
+import 'package:morning_buddies/auth/auth_controller.dart';
+import 'package:morning_buddies/auth/firebase_auth_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 import 'package:morning_buddies/widgets/button/custom_outlined_button.dart';
 import 'package:morning_buddies/widgets/form/custom_form_field.dart';

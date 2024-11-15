@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/screens/home/password_reset.dart';
-import 'package:morning_buddies/service/firebase_auth_service.dart';
+import 'package:morning_buddies/auth/firebase_auth_service.dart';
 
 class HomeSetting extends StatefulWidget {
   const HomeSetting({super.key});
@@ -14,6 +14,7 @@ void logout() {
   final auth = AuthService();
   auth.signOut();
   Get.toNamed('/auth_gate');
+  // 🚨 추후 DeleteToken
 }
 
 class _HomeSettingState extends State<HomeSetting> {
@@ -43,6 +44,7 @@ class _HomeSettingState extends State<HomeSetting> {
                 title: const Text('Password Reset'),
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
+                  // GET 전환
                   Navigator.push(
                     context,
                     MaterialPageRoute(
