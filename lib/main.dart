@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:morning_buddies/models/auth_controller.dart';
+import 'package:morning_buddies/auth/auth_controller.dart';
+import 'package:morning_buddies/auth/dio_client.dart';
+import 'package:morning_buddies/auth/token_manager.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/chat/group_chat_list_page.dart';
@@ -14,7 +16,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
-import 'package:morning_buddies/service/auth_gate.dart';
+import 'package:morning_buddies/auth/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
 // import 'package:timezone/data/latest.dart' as tz;
@@ -22,7 +24,9 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  Get.put(AuthController()); // GetX 의존성 주입
+  final tokenManager = TokenManager();
+  final dioClient = DioClient(tokenManager);
+  Get.put(AuthController(dioClient, tokenManager)); // GetX 의존성 주입
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

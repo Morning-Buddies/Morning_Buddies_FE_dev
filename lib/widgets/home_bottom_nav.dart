@@ -4,7 +4,7 @@ import 'package:morning_buddies/screens/home/chat/test_handshake.dart';
 import 'package:morning_buddies/screens/home/home_create.dart';
 import 'package:morning_buddies/screens/home/home_main.dart';
 import 'package:morning_buddies/screens/home/home_profile.dart';
-import 'package:morning_buddies/service/alert_game_service.dart';
+import 'package:morning_buddies/screens/game/alert_game_service.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
 
 class HomeBottomNav extends StatefulWidget {

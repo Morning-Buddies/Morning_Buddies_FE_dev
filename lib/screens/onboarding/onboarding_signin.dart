@@ -13,7 +13,7 @@ class SignIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: SizedBox(
-        height: 896,
+        height: 876,
         child: Scaffold(
           backgroundColor: ColorStyles.orange,
           body: Center(
