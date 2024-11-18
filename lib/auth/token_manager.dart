@@ -33,6 +33,15 @@ class TokenManager {
     print("Deleted all tokens");
   }
 
+  Future<Map<String, String>> getAllTokens() async {
+    final accessToken = await _storage.read(key: 'accessToken') ?? '';
+    final refreshToken = await _storage.read(key: 'refreshToken') ?? '';
+    return {
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+    };
+  }
+
   Future<void> checkAllStoredValues() async {
     Map<String, String> allValues = await _storage.readAll();
     allValues.forEach((key, value) {
