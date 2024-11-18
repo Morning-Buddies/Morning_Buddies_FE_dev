@@ -23,11 +23,14 @@ class AuthController extends GetxController {
     final url = "$serverUrl/auth/login";
 
     try {
+      // 기존에 저장되었던 토큰 삭제
+      await _tokenManager.deleteTokens();
+      // 로그인 요청
       final response = await _dioClient.dio.post(url, data: {
         'email': email,
         'password': password,
       });
-
+      // 로그인 요청 성공시 헤더 내 토큰 파싱
       if (response.statusCode == 200) {
         final accessToken = response.headers['authorization']?.first;
         final setCookie = response.headers['set-cookie']?.join('; ');
@@ -38,10 +41,11 @@ class AuthController extends GetxController {
             await _tokenManager
                 .saveAccessToken(accessToken.replaceAll('Bearer ', ''));
             await _tokenManager.saveRefreshToken(refreshToken);
-
+            // 토큰 파싱 성공시 사용자 데잍 ㅓ저장
             final userData = response.data['data'];
             _user.value = BEUser.fromJson(userData);
             print('Success Logged in successfully, ${response.data}');
+            // 디버깅시 토큰 저장 확인용
             await _tokenManager.checkAllStoredValues();
           } else {
             print('Error Failed to retrieve refresh token');

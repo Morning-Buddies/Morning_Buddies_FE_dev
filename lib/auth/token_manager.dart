@@ -22,6 +22,7 @@ class TokenManager {
   Future<void> deleteTokens() async {
     await _storage.delete(key: 'accessToken');
     await _storage.delete(key: 'refreshToken');
+    print("Deleted all tokens");
   }
 
   Future<void> checkAllStoredValues() async {

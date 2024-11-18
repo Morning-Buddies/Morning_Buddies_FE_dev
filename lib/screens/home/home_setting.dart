@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:morning_buddies/auth/auth_controller.dart';
 import 'package:morning_buddies/screens/home/password_reset.dart';
 import 'package:morning_buddies/auth/firebase_auth_service.dart';
 
@@ -11,8 +12,10 @@ class HomeSetting extends StatefulWidget {
 }
 
 void logout() {
-  final auth = AuthService();
-  auth.signOut();
+  final fireauth = AuthService();
+  final authController = Get.find<AuthController>();
+  authController.logout();
+  fireauth.signOut();
   Get.toNamed('/auth_gate');
   // 🚨 추후 DeleteToken
 }
