@@ -24,7 +24,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  final tokenManager = TokenManager();
+  final tokenManager = TokenManager(); // 싱글톤 패턴 적용
   final dioClient = DioClient(tokenManager);
   Get.put(AuthController(dioClient, tokenManager)); // GetX 의존성 주입
   await Firebase.initializeApp(

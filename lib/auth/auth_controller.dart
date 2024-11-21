@@ -16,54 +16,16 @@ class AuthController extends GetxController {
   BEUser? get user => _user.value;
   bool get isLoggedIn => _user.value != null;
 
+  // 토큰 GetX 전역 관리
+  final RxString _accessToken = ''.obs;
+  final RxString _refreshToken = ''.obs;
+
+  String? get accessToken => _accessToken.value;
+  String? get refreshToken => _refreshToken.value;
+
   String? serverUrl = dotenv.env["PROJECT_API_KEY"];
 
-  // Login
-  Future<void> login(String email, String password) async {
-    final url = "$serverUrl/auth/login";
-
-    try {
-      // 기존에 저장되었던 토큰 삭제
-      await _tokenManager.deleteTokens();
-      // 로그인 요청
-      final response = await _dioClient.dio.post(url, data: {
-        'email': email,
-        'password': password,
-      });
-      // 로그인 요청 성공시 헤더 내 토큰 파싱
-      if (response.statusCode == 200) {
-        final accessToken = response.headers['authorization']?.first;
-        final setCookie = response.headers['set-cookie']?.join('; ');
-
-        if (accessToken != null && setCookie != null) {
-          final refreshToken = _extractCookieValue(setCookie, 'refresh_token');
-          if (refreshToken != null) {
-            await _tokenManager
-                .saveAccessToken(accessToken.replaceAll('Bearer ', ''));
-            await _tokenManager.saveRefreshToken(refreshToken);
-            // 토큰 파싱 성공시 사용자 데잍 ㅓ저장
-            final userData = response.data['data'];
-            _user.value = BEUser.fromJson(userData);
-            print('Success Logged in successfully, ${response.data}');
-            // 디버깅시 토큰 저장 확인용
-            await _tokenManager.checkAllStoredValues();
-          } else {
-            print('Error Failed to retrieve refresh token');
-          }
-        } else {
-          print('Error Failed to retrieve tokens');
-        }
-      } else {
-        Get.snackbar('Error', 'Login failed');
-      }
-    } on DioException catch (e) {
-      print(
-          '오류 발생: ${e.response?.statusCode},${e.response?.data ?? e.message}');
-      Get.snackbar('Error', e.response?.data['message'] ?? 'An error occurred');
-    }
-  }
-
-  // Register (no token storage required)
+  // 회원가입
   Future<void> registerUser({
     required String email,
     required String password,
@@ -73,10 +35,9 @@ class AuthController extends GetxController {
     required String hour,
   }) async {
     final url = "$serverUrl/auth/join";
-    final dio = Dio();
 
     try {
-      final response = await dio.post(url, data: {
+      final response = await _dioClient.dio.post(url, data: {
         'email': email,
         'password': password,
         'firstName': firstName,
@@ -86,27 +47,88 @@ class AuthController extends GetxController {
       });
 
       if (response.statusCode == 200) {
-        print('회원가입 성공:Success Registered successfully');
+        print('회원가입 성공: Success Registered successfully');
+        // 회원가입 후 자동 로그인 -> 토큰 발급
+        await login(email, password);
       } else {
-        print('Error Registration failed');
-        print('오류 발생: ${response.statusCode},${response.data ?? response}');
+        Get.snackbar('Error', 'Registration failed');
+        print('Error Registration failed: ${response.data}');
       }
-    } catch (e) {
-      print('Error An error occurred during registration ${e}');
+    } on DioException catch (e) {
+      print(
+          '회원가입 에러: ${e.response?.statusCode}, ${e.response?.data ?? e.message}');
+      Get.snackbar('Error', e.response?.data['message'] ?? 'An error occurred');
     }
   }
 
-  // 쿠키 헤더에서 가져오기
-  String? _extractCookieValue(String cookies, String cookieName) {
-    final regex = RegExp('$cookieName=([^;]+);?');
-    final match = regex.firstMatch(cookies);
-    return match?.group(1);
+  // 로그인
+  Future<void> login(String email, String password) async {
+    final url = "$serverUrl/auth/login";
+
+    try {
+      // 기존에 저장된 토큰 삭제
+      await _tokenManager.deleteTokens();
+
+      // 로그인 요청
+      final response = await _dioClient.dio.post(url, data: {
+        'email': email,
+        'password': password,
+      });
+
+      if (response.statusCode == 200) {
+        final accessToken = response.headers['authorization']?.first;
+        final setCookie = response.headers['set-cookie']?.join('; ');
+
+        if (accessToken != null && setCookie != null) {
+          final refreshToken = _extractCookieValue(setCookie, 'refresh_token');
+          if (refreshToken != null) {
+            // 토큰 저장
+            await _tokenManager
+                .saveAccessToken(accessToken.replaceAll('Bearer ', ''));
+            await _tokenManager.saveRefreshToken(refreshToken);
+
+            // 상태 업데이트
+            _accessToken.value = accessToken.replaceAll('Bearer ', '');
+            _refreshToken.value = refreshToken;
+
+            // 사용자 데이터 저장
+            final userData = response.data['data'];
+            _user.value = BEUser.fromJson(userData);
+
+            // 디버깅용 토큰 저장 확인
+            await _tokenManager.checkAllStoredValues();
+
+            print('Logged in successfully');
+          } else {
+            print('Error: Failed to retrieve refresh token');
+          }
+        } else {
+          print('Error: Failed to retrieve tokens');
+        }
+      } else {
+        Get.snackbar('Error', 'Login failed');
+      }
+    } on DioException catch (e) {
+      print(
+          '로그인 에러: ${e.response?.statusCode}, ${e.response?.data ?? e.message}');
+      Get.snackbar('Error', e.response?.data['message'] ?? 'An error occurred');
+    }
   }
 
   // 로그아웃
   Future<void> logout() async {
-    await _tokenManager.deleteTokens();
-    _user.value = null;
+    await _tokenManager.deleteTokens(); // 저장된 토큰 삭제
+    // GetX 상태관리에서도 초기화
+    _accessToken.value = '';
+    _refreshToken.value = '';
+    _user.value = null; // 사용자 상태 초기화
     Get.snackbar('Logged out', 'You have been logged out');
+  }
+
+  // 쿠키 헤더에서 특정 쿠키 추출
+  String? _extractCookieValue(String cookies, String cookieName) {
+    final regex = RegExp('$cookieName=([^;]+);?');
+    final match = regex.firstMatch(cookies);
+    return match?.group(1);
   }
 }

@@ -1,6 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenManager {
+  static final TokenManager _instance = TokenManager._internal();
+
+  TokenManager._internal();
+
+  factory TokenManager() {
+    return _instance;
+  }
+
   final _storage = const FlutterSecureStorage();
 
   Future<void> saveAccessToken(String accessToken) async {
@@ -23,6 +31,15 @@ class TokenManager {
     await _storage.delete(key: 'accessToken');
     await _storage.delete(key: 'refreshToken');
     print("Deleted all tokens");
+  }
+
+  Future<Map<String, String>> getAllTokens() async {
+    final accessToken = await _storage.read(key: 'accessToken') ?? '';
+    final refreshToken = await _storage.read(key: 'refreshToken') ?? '';
+    return {
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+    };
   }
 
   Future<void> checkAllStoredValues() async {
