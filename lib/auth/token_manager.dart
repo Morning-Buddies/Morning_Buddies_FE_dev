@@ -11,6 +11,20 @@ class TokenManager {
 
   final _storage = const FlutterSecureStorage();
 
+  Future<void> saveAccountInfo(String email, String password) async {
+    await _storage.write(key: 'email', value: email);
+    await _storage.write(key: 'password', value: password);
+    print("계정정보 저장소 저장 완료");
+  }
+
+  Future<String?> getEmail() async {
+    return await _storage.read(key: 'email');
+  }
+
+  Future<String?> getPW() async {
+    return await _storage.read(key: 'password');
+  }
+
   Future<void> saveAccessToken(String accessToken) async {
     await _storage.write(key: 'accessToken', value: accessToken);
   }
@@ -30,6 +44,8 @@ class TokenManager {
   Future<void> deleteTokens() async {
     await _storage.delete(key: 'accessToken');
     await _storage.delete(key: 'refreshToken');
+    await _storage.delete(key: 'email');
+    await _storage.delete(key: 'password');
     print("Deleted all tokens");
   }
 
@@ -40,12 +56,5 @@ class TokenManager {
       'accessToken': accessToken,
       'refreshToken': refreshToken,
     };
-  }
-
-  Future<void> checkAllStoredValues() async {
-    Map<String, String> allValues = await _storage.readAll();
-    allValues.forEach((key, value) {
-      print('$key: $value');
-    });
   }
 }

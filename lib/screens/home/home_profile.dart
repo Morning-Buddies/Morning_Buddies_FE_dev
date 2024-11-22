@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:morning_buddies/auth/auth_controller.dart';
 import 'package:morning_buddies/models/groupinfo_controller.dart';
 import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/utils/design_palette.dart';
@@ -19,37 +20,9 @@ class HomeProfile extends StatefulWidget {
 }
 
 class _HomeProfileState extends State<HomeProfile> {
-  String _userName = "Loading..."; // Initial state with a placeholder
-
-  Future<void> getUserName() async {
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    User? currentUser = auth.currentUser;
-
-    if (currentUser != null) {
-      String uid = currentUser.uid;
-      DocumentSnapshot userDoc =
-          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
-
-      if (userDoc.exists) {
-        String name = "${userDoc['lastname']} ${userDoc['firstname']}";
-        if (mounted) {
-          setState(() {
-            _userName = name;
-          });
-        }
-        print("User Name: $name");
-      } else {
-        print("User document does not exist.");
-      }
-    } else {
-      print("No user is signed in.");
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getUserName();
   }
 
   @override
@@ -59,7 +32,7 @@ class _HomeProfileState extends State<HomeProfile> {
 
   @override
   Widget build(BuildContext context) {
-    // final GroupStatusController groupStatusController = Get.find();
+    final AuthController authController = Get.find<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -69,7 +42,12 @@ class _HomeProfileState extends State<HomeProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _ProfileCard(name: _userName),
+              Obx(() {
+                final user = authController.user;
+                return _ProfileCard(
+                  name: "${user?.lastName} ${user?.firstName}",
+                );
+              }),
               const SizedBox(height: 16.0),
               // Pixel Err
               const _SectionTitle("Your Performance"),

@@ -16,6 +16,8 @@ class SignIn extends StatelessWidget {
         height: 876,
         child: Scaffold(
           backgroundColor: ColorStyles.orange,
+          resizeToAvoidBottomInset: true, // 키보드 등장 시 화면 조정
+
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

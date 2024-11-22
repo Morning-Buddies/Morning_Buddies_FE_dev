@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:morning_buddies/auth/auth_controller.dart';
-import 'package:morning_buddies/auth/dio_client.dart';
 import 'package:morning_buddies/auth/token_manager.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
@@ -25,8 +24,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   final tokenManager = TokenManager(); // 싱글톤 패턴 적용
-  final dioClient = DioClient(tokenManager);
-  Get.put(AuthController(dioClient, tokenManager)); // GetX 의존성 주입
+  Get.put(AuthController(tokenManager)); // GetX 의존성 주입
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
