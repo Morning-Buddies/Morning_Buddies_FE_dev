@@ -91,7 +91,7 @@ class AuthController extends GetxController {
           _user.value = BEUser.fromJson(userData);
           print(_user.value);
 
-          // 상태 업데이트
+          // 상태 업데이트te
           _accessToken.value = accessToken;
           _refreshToken.value = refreshToken;
 
@@ -130,6 +130,13 @@ class AuthController extends GetxController {
       if (email != null && password != null) {
         Get.snackbar('자동 로그인', '저장된 이메일/비밀번호로 로그인 시도');
         await login(email, password); // 모든 조건 만족시 로그인 진행
+      } else if (refreshToken != null) {
+        Get.snackbar('자동 로그인', 'Refresh Token으로 세션 복원 시도');
+        final success = await refreshAccessToken(refreshToken);
+        if (!success) {
+          Get.snackbar('로그인 실패', '세션이 만료되었습니다. 다시 로그인해주세요.');
+          Get.offAll(() => const SignIn()); // 로그인 화면 이동
+        }
       } else {
         Get.snackbar('자동 로그인 실패', '저장된 정보 없음, 로그인 화면으로 이동');
         Get.offAll(() => const SignIn());
@@ -144,7 +151,7 @@ class AuthController extends GetxController {
   }
 
   // 토큰 갱신
-  Future<bool> _refreshAccessToken(String refreshToken) async {
+  Future<bool> refreshAccessToken(String refreshToken) async {
     final url = "$serverUrl/auth/reissue";
     print('토큰 갱신 Refresh Token으로 새로운 엑세스 토큰 시도');
 
