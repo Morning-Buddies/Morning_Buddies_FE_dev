@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:morning_buddies/auth/auth_gate.dart';
 import 'package:morning_buddies/screens/onboarding/onboarding_signin.dart';
 import 'token_manager.dart';
 import '../models/user_model.dart';
@@ -198,7 +199,7 @@ class AuthController extends GetxController {
     _user.value = null;
     _accessToken.value = '';
     _refreshToken.value = '';
-    Get.offAll(const SignIn());
+    Get.offAll(const AuthGate());
     print('로그아웃 성공');
   }
 
