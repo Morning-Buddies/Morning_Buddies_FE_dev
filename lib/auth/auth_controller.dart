@@ -179,7 +179,7 @@ class AuthController extends GetxController {
           _refreshToken.value = newRefreshToken;
 
           print('토큰 갱신 성공: 새로운 Access Token과 Refresh Token 저장');
-          print(_accessToken.value);
+          print("newAT : $_accessToken");
           print(_refreshToken.value);
 
           return true;
