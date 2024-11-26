@@ -18,72 +18,71 @@ class _MyWidgetState extends State<MyWidget> {
   final List<String> _messages = [];
   WebSocket? _socket;
   final AuthController _authController = Get.find<AuthController>();
+  bool _isReconnecting = false;
 
   @override
   void initState() {
     super.initState();
-    connectToWebSocket();
+    connectToWebSocket(fakeToken: true); // 초기 fakeAccessToken 사용
   }
 
-  void connectToWebSocket() async {
+  Future<void> connectToWebSocket({bool fakeToken = false}) async {
     String? accessToken = _authController.accessToken;
-    const fakeAccessToken = "fake_or_expired_access_token";
 
-    if (accessToken == null || accessToken.isEmpty) {
-      print("Access Token is missing. Attempting to refresh...");
-      final refreshToken = _authController.refreshToken;
-      print("Initial Refresh Token: $refreshToken");
-
-      if (refreshToken != null) {
-        final success = await _authController.refreshAccessToken(refreshToken);
-        print("Refresh Token Success: $success");
-
-        if (success) {
-          accessToken = _authController.accessToken;
-          print("Access Token refreshed successfully: $accessToken");
-        } else {
-          setState(() {
-            _messages.add("Unable to refresh token. Please log in again.");
-          });
-          return;
-        }
-      } else {
+    if (!fakeToken && (accessToken == null || accessToken.isEmpty)) {
+      await _handleTokenRefresh();
+      accessToken = _authController.accessToken;
+      if (accessToken == null) {
         setState(() {
-          _messages.add("No refresh token available. Please log in.");
+          _messages.add("Unable to refresh token. Please log in.");
         });
         return;
       }
     }
 
+    final uri = Uri.parse("$serverUrl/1/1");
+
     try {
-      print("Connecting to WebSocket...");
+      // HTTP handshake to check status code
+      final request = await HttpClient().openUrl('GET', uri);
+      request.headers.set('Authorization', 'Bearer $accessToken');
+
+      final response = await request.close();
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        print("Access token might be expired. Refreshing...");
+        if (!_isReconnecting) {
+          _isReconnecting = true;
+          await _handleTokenRefresh();
+          _isReconnecting = false;
+          connectToWebSocket(); // 갱신 후 재연결
+        }
+        return;
+      } else if (response.statusCode != 101) {
+        print("Unexpected status code: ${response.statusCode}");
+        setState(() {
+          _messages.add("Unexpected status code: ${response.statusCode}");
+        });
+        return;
+      }
+
+      // WebSocket connection after successful handshake
       _socket = await WebSocket.connect(
-        // {gruopId}/{memberId}
-        "$serverUrl/1/1",
+        uri.toString(),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
       );
 
       print("WebSocket connected successfully");
+      setState(() {
+        _messages.add("Connected to WebSocket.");
+      });
 
       _socket!.listen(
         (message) {
           setState(() {
             _messages.add("Received: $message");
           });
-        },
-        onError: (error) {
-          print("WebSocket Error: $error"); // 오류 출력
-          if (error.toString().contains("401") ||
-              error.toString().contains("403")) {
-            print("Access token might be expired. Refreshing...");
-            _handleTokenRefresh(); // 갱신 로직 처리
-          } else {
-            setState(() {
-              _messages.add("WebSocket Error: $error");
-            });
-          }
         },
         onDone: () {
           print("WebSocket connection closed.");
@@ -101,12 +100,25 @@ class _MyWidgetState extends State<MyWidget> {
     }
   }
 
+  int _tokenRefreshAttempts = 0;
+  final int _maxRefreshAttempts = 3;
+
   Future<void> _handleTokenRefresh() async {
+    if (_tokenRefreshAttempts >= _maxRefreshAttempts) {
+      setState(() {
+        _messages.add("Failed to refresh token. Please log in again.");
+      });
+      return;
+    }
+
+    _tokenRefreshAttempts++;
     final refreshToken = _authController.refreshToken;
+
     if (refreshToken != null) {
       final success = await _authController.refreshAccessToken(refreshToken);
       if (success) {
-        connectToWebSocket(); // 토큰 갱신 성공 후 재연결
+        _tokenRefreshAttempts = 0; // Reset attempts on success
+        connectToWebSocket();
       } else {
         setState(() {
           _messages.add("Failed to refresh token. Please log in again.");

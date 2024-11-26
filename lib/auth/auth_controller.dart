@@ -175,8 +175,13 @@ class AuthController extends GetxController {
         if (newAccessToken != null && newRefreshToken != null) {
           await _tokenManager.saveAccessToken(newAccessToken);
           await _tokenManager.saveRefreshToken(newRefreshToken);
+          _accessToken.value = newAccessToken;
+          _refreshToken.value = newRefreshToken;
 
           print('토큰 갱신 성공: 새로운 Access Token과 Refresh Token 저장');
+          print(_accessToken.value);
+          print(_refreshToken.value);
+
           return true;
         } else {
           throw Exception('새로운 토큰을 찾을 수 없습니다.');
