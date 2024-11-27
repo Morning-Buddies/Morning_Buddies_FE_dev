@@ -18,7 +18,8 @@ import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/auth/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
-// import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  tz.initializeTimeZones(); // 타임존 초기화
+
   runApp(const MyApp());
 }
 
