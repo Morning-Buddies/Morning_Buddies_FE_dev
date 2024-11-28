@@ -19,8 +19,8 @@ class _AuthGateState extends State<AuthGate> {
   void initState() {
     super.initState();
     _authController = Get.find<AuthController>();
-    _notificationHelper.requestPermissions();
-    _notificationHelper.initializeNotifications();
+    _notificationHelper.requestPermissions(); // 권한 요청
+    _notificationHelper.initializeNotifications(); // noti 초기화
     _initializeAuth(); // 자동 로그인 호출
   }
 
