@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:morning_buddies/auth/auth_controller.dart';
 import 'package:morning_buddies/auth/token_manager.dart';
 import 'package:morning_buddies/models/groupchat_controller.dart';
+import 'package:morning_buddies/screens/game/alert_game_service.dart';
 import 'package:morning_buddies/screens/game/game_start.dart';
 import 'package:morning_buddies/screens/home/chat/group_chat_list_page.dart';
 import 'package:morning_buddies/screens/home/home_group_detail.dart';
@@ -18,16 +19,20 @@ import 'package:morning_buddies/screens/subscription_screen.dart';
 import 'package:morning_buddies/auth/auth_gate.dart';
 import 'package:morning_buddies/widgets/home_bottom_nav.dart';
 import 'firebase_options.dart';
-// import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   final tokenManager = TokenManager(); // 싱글톤 패턴 적용
   Get.put(AuthController(tokenManager)); // GetX 의존성 주입
+  // Get.put(AlertGameService(), permanent: true);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  tz.initializeTimeZones(); // 타임존 초기화
+
   runApp(const MyApp());
 }
 

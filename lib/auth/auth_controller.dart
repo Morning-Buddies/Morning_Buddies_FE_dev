@@ -25,6 +25,7 @@ class AuthController extends GetxController {
   String? get refreshToken => _refreshToken.value;
 
   String? serverUrl = dotenv.env["PROJECT_API_KEY"];
+  String? testSeverUrl = dotenv.env["MOCKDATA_API_KEY"];
 
   // 회원가입
   Future<void> registerUser({
@@ -63,7 +64,7 @@ class AuthController extends GetxController {
 
   // 로그인
   Future<void> login(String email, String password) async {
-    final url = "$serverUrl/auth/login";
+    final url = "$testSeverUrl/auth/login";
 
     try {
       final response = await _dio.post(url, data: {
