@@ -8,7 +8,7 @@ class AlertGameService {
   bool _isGameCompleted = false; // 게임 완료 여부
   final NotificationHelper _notificationHelper = NotificationHelper();
 
-  String targetTime = "16:46:00";
+  String targetTime = "13:42:00";
   final seoul = tz.getLocation('Asia/Seoul');
 
   tz.TZDateTime convertToDateTime(String targetTime) {
@@ -73,7 +73,7 @@ class AlertGameService {
     print("wake_up_alert 반복 알림 시작");
 
     try {
-      const int notificationCount = 10;
+      const int notificationCount = 4;
       await _notificationHelper.scheduleMultipleNotifications(
         convertedTargetTime, // targetTime 이후 시작
         notificationCount,

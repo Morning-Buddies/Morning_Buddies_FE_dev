@@ -56,6 +56,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
           showWhenUnlinked: false,
           offset: const Offset(0.0, 32.0), // DropdownButton 아래에 위치하도록 조정
           child: Material(
+            color: Colors.white,
             elevation: 4.0,
             child: SizedBox(
               height: MediaQuery.of(context).size.height * 0.5, // 화면 높이의 절반

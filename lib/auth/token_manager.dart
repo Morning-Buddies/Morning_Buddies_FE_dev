@@ -42,10 +42,10 @@ class TokenManager {
   }
 
   Future<void> deleteTokens() async {
-    await _storage.delete(key: 'accessToken');
-    await _storage.delete(key: 'refreshToken');
     await _storage.delete(key: 'email');
     await _storage.delete(key: 'password');
+    await _storage.delete(key: 'accessToken');
+    await _storage.delete(key: 'refreshToken');
     print("Deleted all tokens");
   }
 
