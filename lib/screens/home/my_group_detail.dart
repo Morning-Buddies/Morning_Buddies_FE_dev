@@ -18,6 +18,8 @@ class _MyGroupDetailState extends State<MyGroupDetail> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: true, // 뒤로가기 버튼 추가 (기본값 true)
+
         title: const Text(
           "My Groups",
           style: TextStyle(fontWeight: FontWeight.bold),

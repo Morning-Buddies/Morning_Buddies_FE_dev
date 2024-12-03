@@ -37,6 +37,7 @@ class AuthController extends GetxController {
     required String hour,
   }) async {
     final url = "$serverUrl/auth/join";
+    await _tokenManager.deleteTokens();
 
     try {
       final response = await _dio.post(url, data: {
@@ -50,7 +51,7 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200) {
         print('회원가입 성공: Success Registered successfully');
-        Get.offAll(const SignIn()); // 회원가입 후 로그인 화면 이동
+        login(email, password);
       } else {
         Get.snackbar('Error', 'Registration failed');
         print('Error Registration failed: ${response.data}');
@@ -64,7 +65,7 @@ class AuthController extends GetxController {
 
   // 로그인
   Future<void> login(String email, String password) async {
-    final url = "$testSeverUrl/auth/login";
+    final url = "$serverUrl/auth/login";
 
     try {
       final response = await _dio.post(url, data: {
